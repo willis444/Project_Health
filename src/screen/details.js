@@ -1,13 +1,14 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-import { Divider, Icon, Layout, Text, TopNavigation, TopNavigationAction } from '@ui-kitten/components';
+import { Divider, Icon, Layout, Text, TopNavigation, TopNavigationAction, Button } from '@ui-kitten/components';
+import axios from 'axios';
+import {api, local} from '@env';
 
 const BackIcon = (props) => (
   <Icon {...props} name='arrow-back' />
 );
 
 export const DetailsScreen = ({ navigation }) => {
-
   const navigateBack = () => {
     navigation.goBack();
   };

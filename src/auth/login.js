@@ -3,12 +3,24 @@ import { SafeAreaView, Platform, View, TouchableWithoutFeedback } from 'react-na
 import styles from './styles';
 import { Button, Divider, Layout, TopNavigation, Input, Text, Icon } from '@ui-kitten/components';
 import { Spacer } from '../../custom_components';
+import { login } from '../../axios/auth';
+import { toastMessage } from '../../custom_components';
+import { setLoginSession } from '../store/auth/authSlice';
+import { useDispatch } from 'react-redux';
 
 export const LoginScreen = ({ navigation }) => {
 
-  const navigateDetails = () => {
-    navigation.navigate('Details');
-  };
+  const dispatch = useDispatch();
+
+  async function loginButton() { // login function
+    var response = await login(valueID, valuePassword); // call the login function from axios
+    if (!response) { // if the response is null
+      dispatch(setLoginSession()); // update redux state
+      toastMessage('Login successfully'); // display successful message to user
+    } else { // if there is any error message returned, display it
+    toastMessage(response);
+    }
+  }
 
   const AlertIcon = (props) => (
     <Icon {...props} name='alert-circle-outline'/>
@@ -62,7 +74,7 @@ export const LoginScreen = ({ navigation }) => {
           onChangeText={nextValue => setValuePassword(nextValue)}
            />
           <Spacer height={32}/>
-        <Button onPress={navigateDetails}>OPEN DETAILS</Button>
+        <Button onPress={() => loginButton()}>LOGIN</Button>
       </Layout>
     </SafeAreaView>
   );
