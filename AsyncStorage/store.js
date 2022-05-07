@@ -11,7 +11,7 @@ const storeJWT = async (token) => {
 
   const getJWT = async () => {
     try {
-      const token = await AsyncStorage.getItem('jwt')
+      const token = await AsyncStorage.getItem('jwt');
       if(token) {
         return token;
       } else {
@@ -25,7 +25,7 @@ const storeJWT = async (token) => {
 
   const checkJWT = async () => {
       try {
-        const token = await AsyncStorage.getItem('jwt')
+        const token = await AsyncStorage.getItem('jwt');
         return (token ? true : false); //if there is jwt token, return true. else return false
       } catch (error) {
           console.log(error)
@@ -35,7 +35,7 @@ const storeJWT = async (token) => {
 
   const clearJWT = async () => {
     try {
-      const token = await AsyncStorage.setItem('jwt', null);
+      await AsyncStorage.removeItem('jwt');
     } catch (error) {
       console.log(error);
     }

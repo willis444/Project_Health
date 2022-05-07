@@ -7,7 +7,16 @@ export default StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center'
   },
-
+  title: {
+    fontSize:50,
+  },
+  subTitle: {
+    fontSize:15,
+  },
+  registerButton: {
+    fontSize:15,
+    color: '#3366ff',
+  },
   card: {
     flex: 1,
     flexDirection: 'column',
