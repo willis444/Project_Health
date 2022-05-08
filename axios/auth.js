@@ -1,6 +1,10 @@
 import axios from 'axios';
 import {api, local} from '@env';
 import { storeJWT } from '../AsyncStorage/store';
+import { setisLoading } from '../src/store/app/appSlice';
+import { useDispatch } from 'react-redux';
+
+axios.defaults.timeout = 1000 * 5; // define timeout
 
 const baseUrl = local;
 
@@ -14,7 +18,7 @@ const test = async () => {
   });
   console.log(response.data);
   } catch (error) {
-    console.log(error.response.data);
+    console.log(error);
   }
 };
 
@@ -28,8 +32,14 @@ const login = async (user_id, user_password) => { // login function
     });
   storeJWT(response.data.token); // store jwt token into async storage
   } catch (error) { // error handling
-      console.log(error.response.data);
-      return(error.response.data);
+      try {
+        if (error.response.headers) {
+            console.log(error.response.data);
+            return(error.response.data);
+          }
+      } catch {
+        return (error.message);
+      }
   }
 };
 
@@ -43,8 +53,14 @@ const register = async (user_id, user_password) => { // register function
     });
     return response;
   } catch (error) { // error handling
-    console.log(error.response.data);
-    return(error.response.data);
+    try {
+      if (error.response.headers) {
+          console.log(error.response.data);
+          return(error.response.data);
+        }
+    } catch {
+      return (error.message);
+    }
   }
 }
 

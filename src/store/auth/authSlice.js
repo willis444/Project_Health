@@ -2,8 +2,10 @@ import { createSlice } from '@reduxjs/toolkit'
 import { checkJWT, getJWT } from '../../../AsyncStorage/store.js'
 
 const initialState = {
-  loginStatus: checkJWT(),
-  jwtToken: getJWT(),
+  loginStatus: null,
+  jwtToken: null,
+  // loginStatus: checkJWT(),
+  // jwtToken: getJWT(),
 }
 
 export const loginSlice = createSlice({

@@ -2,18 +2,25 @@ import React, { useState } from 'react';
 import { SafeAreaView, Platform, View, TouchableWithoutFeedback, Pressable } from 'react-native';
 import styles from './styles';
 import { Button, Divider, Layout, TopNavigation, Input, Text, Icon } from '@ui-kitten/components';
-import { Spacer } from '../../../custom_components';
+import { Spacer, LoadingSpinner } from '../../../custom_components';
 import { login } from '../../../axios/auth';
 import { toastMessage } from '../../../custom_components';
-import { setLoginSession } from '../../store/auth/authSlice';
-import { useDispatch } from 'react-redux';
+import { setisLoading } from '../../store/app/appSlice'
+import { useDispatch, useSelector } from 'react-redux';
 import { getJWT } from '../../../AsyncStorage/store';
 
 export const LoginScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
 
+  const isLoading = useSelector(state => state.app.isLoading.payload);
+
   async function loginButton() { // login function
+    if (valueID == "" || valuePassword == "") {
+      return toastMessage("Please fill in all the required fields");
+    }
+    dispatch(setisLoading(true));
+    console.log(isLoading);
     var response = await login(valueID, valuePassword); // call the login function from axios
     if (!response) { // if the response is null
       const token = await getJWT();
@@ -22,9 +29,11 @@ export const LoginScreen = ({ navigation }) => {
         index: 0,
         routes: [{ name: 'Home' }],
       });
-      toastMessage('Login successfully'); // display successful message to user 
+      toastMessage('Login successfully'); // display successful message to user
+      dispatch(setisLoading(false));
     } else { // if there is any error message returned, display it
     toastMessage(response);
+    dispatch(setisLoading(false));
     }
   }
 
@@ -65,9 +74,9 @@ export const LoginScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {/* if it is ios system, show the top navigation bar */} 
-      <Divider/>
       <Layout style={styles.card}>
+        {/* if is loading== true, show loading screen */}
+      {isLoading==true ? <LoadingSpinner/> : null}
         <Text style={styles.title}>Login</Text>
         <Spacer />
         <Input
@@ -88,6 +97,7 @@ export const LoginScreen = ({ navigation }) => {
            />
           <Spacer height={20}/>
         <Button onPress={() => loginButton()}>LOGIN</Button>
+        <Spacer/>
         <Spacer/>
         <Text style={styles.subTitle}>Don't have an account?</Text>
         <Pressable
