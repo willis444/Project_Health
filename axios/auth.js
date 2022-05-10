@@ -1,14 +1,24 @@
 import axios from 'axios';
-import {api, local} from '@env';
+import {API} from '@env';
 import { storeJWT } from '../AsyncStorage/store';
-import { setisLoading } from '../src/store/app/appSlice';
-import { useDispatch } from 'react-redux';
+import { getJWT } from '../AsyncStorage/store'
 
-axios.defaults.timeout = 1000 * 5; // define timeout
+axios.defaults.timeout = 1000 * 5; // define timeout, 5 seconds
 
-const baseUrl = local;
+const baseUrl = API;
 
-const headers = {"Authorization": "Bearer " + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNpYmFpIiwiaWF0IjoxNjUxMzg4NTM4LCJleHAiOjE2NTE5OTMzMzh9.DS1CGrOAmmgidLhdwqjHak9QIRrS1PZRihMKfLefplA'};
+var headers = null;
+
+const generateHeader = async() => {
+  if (!headers) {
+  const jwt = await getJWT();
+  headers = {"Authorization": "Bearer " + jwt};
+  } else {
+    //do nothing
+  }
+}
+
+generateHeader();
 
 const test = async () => {
   try {

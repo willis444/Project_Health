@@ -6,6 +6,7 @@ import { LoginScreen } from '../auth/login';
 import { RegisterScreen } from '../auth/register/index';
 import { HomeScreen } from '../screen/dashboard/index';
 import { DetailsScreen } from '../screen/details';
+import { ProfileScreen } from '../screen/profile/index';
 import { useSelector, useDispatch } from 'react-redux';
 
 const { Navigator, Screen } = createStackNavigator();
@@ -36,6 +37,7 @@ export const AppNavigator = () => {
         <Screen name='Login' component={LoginScreen}/>
         <Screen name='Register' component={RegisterScreen}/>
         <Screen name='Home' component={HomeScreen}/>
+        <Screen name='Profile' component={ProfileScreen}/>
         <Screen name='Details' component={DetailsScreen}/>
       </Navigator>
     );
