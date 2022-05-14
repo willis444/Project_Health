@@ -9,7 +9,7 @@ const baseUrl = API;
 
 var headers = null;
 
-const generateHeader = async() => {
+export const generateHeader = async() => {
   if (!headers) {
   const jwt = await getJWT();
   headers = {"Authorization": "Bearer " + jwt};

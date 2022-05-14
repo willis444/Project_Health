@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Platform, View, TouchableWithoutFeedback, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import { SafeAreaView, View } from 'react-native';
 import styles from './styles';
 import { Layout, Input, Text, Toggle, Button } from '@ui-kitten/components';
 import { Spacer, LoadingSpinner } from '../../../custom_components';
@@ -97,9 +97,10 @@ export const ProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Layout style={styles.card}>
+      <View style={{flex:1}}>
         {/* if is loading== true, show loading screen */}
         {isLoading==true ? <LoadingSpinner/> : null}
+      <Layout style={styles.card}>
         <Text style={styles.title}>Profile</Text>
         <Spacer />
         <Input
@@ -118,7 +119,7 @@ export const ProfileScreen = ({ navigation }) => {
         <Text style={styles.content}>I am a PORK eater</Text>
         <Spacer/>
         <Toggle style={styles.toggle}
-                status= {isPork?'success':'basic'}
+                status= {isPork?'success':'danger'}
                 checked={isPork} 
                 onChange={onCheckedPork}>
         </Toggle>
@@ -126,7 +127,7 @@ export const ProfileScreen = ({ navigation }) => {
         <Text style={styles.content}>I am a BEEF eater</Text>
         <Spacer/>
         <Toggle style={styles.toggle}
-                status= {isBeef?'success':'basic'}
+                status= {isBeef?'success':'danger'}
                 checked={isBeef} 
                 onChange={onCheckedBeef}>
         </Toggle>
@@ -134,7 +135,7 @@ export const ProfileScreen = ({ navigation }) => {
         <Text style={styles.content}>I eat SEAFOOD</Text>
         <Spacer/>
         <Toggle style={styles.toggle}
-                status= {isSeafood?'success':'basic'}
+                status= {isSeafood?'success':'danger'}
                 checked={isSeafood} 
                 onChange={onCheckedSeafood}>
         </Toggle>
@@ -142,7 +143,7 @@ export const ProfileScreen = ({ navigation }) => {
         <Text style={styles.content}>I am a VEGETARIAN</Text>
         <Spacer/>
         <Toggle style={styles.toggle}
-                status= {isVegetarian?'success':'basic'}
+                status= {isVegetarian?'success':'danger'}
                 checked={isVegetarian} 
                 onChange={onCheckedVegetarian}>
         </Toggle>
@@ -151,6 +152,7 @@ export const ProfileScreen = ({ navigation }) => {
         <Button onPress={() => updateUserProfile()}>Update Profile</Button>
         <Button onPress={() => cancel()}>Cancel</Button>
       </Layout>
+      </View>
     </SafeAreaView>
   );
 };

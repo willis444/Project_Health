@@ -47,7 +47,7 @@ export const appSlice = createSlice({
     },
     extraReducers: builder => { 
       builder.addCase(retrieveUserProfile.fulfilled, (state, {payload}) => {
-        state.user_id = payload.data.user_id;
+        state.user_id = payload.data._id;
         state.user_role = payload.data.user_role;
         state.isPork = payload.data.user_eating_habits.isPork;
         state.isBeef = payload.data.user_eating_habits.isBeef;
