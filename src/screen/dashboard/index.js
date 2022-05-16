@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { SafeAreaView } from 'react-native';
 import { Button, Layout, Icon } from '@ui-kitten/components';
 import { ThemeContext } from '../../theme/theme-context';
@@ -8,13 +8,12 @@ import { Spacer } from '../../../custom_components';
 import { toastMessage } from '../../../custom_components';
 import { getProfile } from '../../../axios/user';
 import { clearJWT } from '../../../AsyncStorage/store';
-import { findFood } from '../../../axios/food'
 
 export const HomeScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
 
-  const themeContext = React.useContext(ThemeContext);
+  const themeContext = useContext(ThemeContext);
 
   const navigateDetails = () => {
     navigation.navigate('Details');
@@ -36,11 +35,6 @@ export const HomeScreen = ({ navigation }) => {
       routes: [{ name: 'Login' }],
     });
     toastMessage('Logged out Successfully');
-  }
-
-  const test = async() => {
-    const data = await findFood('nasi lemak');
-    console.log(data);
   }
 
   return (

@@ -1,23 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  foodName: [
-      {title: "apa lancau"},
-      {title: "ababababababa"}
-  ],
+  foodName: [],
 }
 
 export const foodSlice = createSlice({
     name: 'food',
     initialState,
     reducers: {
-      clearFoodCache: (state) => {
-        state.foodName = null;
+      addFoodToArray: (state, foodName) => {
+        state.foodName = foodName.payload; // add the object into the array
+      },
+      clearFoodCache: (state) => { // function to clear the food redux state
+        state.foodName = [];
       },
     },
   })
   
   // Action creators are generated for each case reducer function
-  export const { clearFoodCache } = foodSlice.actions
+  export const { clearFoodCache, addFoodToArray} = foodSlice.actions
   
   export default foodSlice.reducer

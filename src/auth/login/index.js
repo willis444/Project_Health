@@ -95,7 +95,7 @@ export const LoginScreen = ({ navigation }) => {
           secureTextEntry={secureTextEntry}
           onChangeText={nextValue => setValuePassword(nextValue)}
            />
-          <Spacer height={20}/>
+        <Spacer height={20}/>
         <Button onPress={() => loginButton()}>LOGIN</Button>
         <Spacer/>
         <Spacer/>
