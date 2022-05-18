@@ -32,6 +32,7 @@ const [query, setQuery] = useState(""); // state for search bar
 const [data, setData] = useState([]); // state for the fetched result from db
 const [selected, setSelected] = useState([]); // state for the selected food
 const [selectedIndex, setSelectedIndex] = useState(new IndexPath(1)); // state for the meals type selection
+const [isDelete, toggleisDelete] = useState(false);
 
 // option for the selection bar
 const mealType = [
@@ -151,7 +152,7 @@ const showTimepicker = () => {
 // function to convert date time into human readible date
 const convertDate = () => {
   var date = rawDateTime.getDate();
-  var month = rawDateTime.getMonth() + 1;
+  var month = rawDateTime.getMonth();
   var year = rawDateTime.getFullYear();
   var MonthName =  ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
@@ -199,6 +200,14 @@ function addServingSize (index){
   }
 }
 
+function toggleDelete() {
+  if (isDelete == true) {
+    toggleisDelete(false);
+  } else {
+    toggleisDelete(true);
+  }
+}
+
 function deleteFood (index) {
   var name = selected[index].food_name;
   setSelected(selected.filter(element => element.food_name !== name));
@@ -212,14 +221,18 @@ const RenderSelection = () => {
     <Layout style={styles.foodCard} level='3'>
       <Text style={styles.foodText}>{index+1}. {element.food_name}</Text>
       {/* input to show the serving size */}
-      <Layout style={styles.servingCard}>
+      <Layout style={styles.layoutCard}>
+        {!isDelete?
+        (<Layout style={styles.servingContainer}>
         <Button style={styles.servingButton} size='small' accessoryRight={MinusIcon} onPress={() => minusServingSize(index)}></Button>
         <Input style={styles.servingText} size='small' value={element.serving_size.toString()}/>
         <Button style={styles.servingButton} size='small' accessoryRight={PlusIcon} onPress={() => addServingSize(index)}></Button>
-        <Layout style={styles.deleteButtonContainer}>
+        </Layout>) :
+        (<Layout>
         <Button style={styles.deleteButton} size='small' accessoryRight={TrashIcon} status='danger' onPress={() => deleteFood(index)}></Button>
-        </Layout>
+        </Layout>)}
       </Layout>
+
     </Layout>
     );
   } 
@@ -229,7 +242,6 @@ const addFoodToDB = async() => {
   dispatch(setisLoading(true));
   const datetime = rawDateTime; // get date time from the state
   const meal_type = selectedOption; // get the meal type from the selection option
-  console.log(meal_type);
   var foodArr = [];
   var serveSizeArr = [];
   selected.forEach(element=> { // push the food id and serving size into the array
@@ -305,8 +317,15 @@ return (
       </Autocomplete>
       <Spacer height={30}/>
       <Layout style={styles.foodContainer}>
-      {selected.length == 0?null:<Text>Selected food</Text>}
       {/* if the selected array has any item inside, render the ui component to display user's selection */}
+      {selected.length == 0?null :
+      <Layout style={styles.containerHeader}>
+      <Text>Selected food</Text>
+      <Pressable style={styles.deleteText} onPress={toggleDelete}>
+      <Text status={'danger'}>Delete</Text>
+      </Pressable>
+      </Layout>
+      }
       {selected.length == 0?null:<RenderSelection/>}
       </Layout>
       <Spacer/>

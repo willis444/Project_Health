@@ -27,6 +27,10 @@ export const HomeScreen = ({ navigation }) => {
     navigation.navigate('LogFood');
   }
 
+  const navigateLogFoodBy = () => {
+    navigation.navigate('ViewLogByDay');
+  }
+
   const logout = () => {
     dispatch(destroyLoginSession()); // update the redux state by deleting the login status and token
     clearJWT(); // clear the token stored in async storage
@@ -41,24 +45,14 @@ export const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Button style={{ marginVertical: 4 }} onPress={() => navigateProfile()}>My Profile</Button>
-        <Icon
-        style={{
-          width: 32,
-          height: 32,
-        }}
-        fill='#8F9BB3'
-        name='star'
-        />
-        <Spacer/>
-        <Button style={{ marginVertical: 4 }} onPress={navigateDetails}>OPEN DETAILS</Button>
         <Spacer/>
         <Button style={{ marginVertical: 4 }} onPress={themeContext.toggleTheme}>TOGGLE THEME</Button>
         <Spacer/>
         <Button style={{ marginVertical: 4 }} onPress={() => navigateLogFood()}>Log Food</Button>
         <Spacer/>
-        <Button style={{ marginVertical: 4 }} onPress={() => logout()}>Logout</Button>
+        <Button style={{ marginVertical: 4 }} onPress={() => navigateLogFoodBy()}>View Logged Food</Button>
         <Spacer/>
-        <Button style={{ marginVertical: 4 }} onPress={() => test()}>test</Button>
+        <Button style={{ marginVertical: 4 }} onPress={() => logout()}>Logout</Button>
       </Layout>
     </SafeAreaView>
   );

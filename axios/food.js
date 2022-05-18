@@ -10,15 +10,9 @@ const baseUrl = API; //define api end point
 var headers = null;
 
 const generateHeader = async() => {
-  if (!headers) {
   const jwt = await getJWT();
   headers = {"Authorization": "Bearer " + jwt, "content-type": "application/x-www-form-urlencoded"};
-  } else {
-    //do nothing
-  }
-}
-
-generateHeader();
+};
 
 const findFood = async (keywords) => { // login function
     const data = {"food_name": keywords}; // prepare the data query
@@ -44,6 +38,7 @@ const findFood = async (keywords) => { // login function
   };
 
 const addNewFoodRecord = async (datetime, meal_type, food_id, serving_size) => {
+  await generateHeader(); // generater header
   const url = `${baseUrl}/food/LogFood`; // define api url
   const content = {"datetime": datetime, "meal_type": meal_type, "food_id": food_id, "serving_size": serving_size} // define the data that will be sent via the api
   try {
@@ -64,7 +59,28 @@ const addNewFoodRecord = async (datetime, meal_type, food_id, serving_size) => {
     }
 }
 
+const getLogByDay = async (startDate, endDate) => {
+  await generateHeader(); // generater header
+  const url = `${baseUrl}/food/retrieveLogByDay/${startDate}/${endDate}`; // define api url with parameters
+  try {
+    const response = await axios.get(url, // send a get request
+      {"headers": headers} // append the header
+      );
+    return response.data;
+  } catch (error) {
+    try {
+      if (error.response.headers) { // if there is header from error message, means it is returned by the api
+          console.log(error.response.data);
+          return(error.response.data);
+        }
+    } catch { // else display error from axios
+      return ("Opps, seemslike the server is down, please try again later.");
+    }
+  }
+}
+
   export {
     findFood,
     addNewFoodRecord,
+    getLogByDay
   }

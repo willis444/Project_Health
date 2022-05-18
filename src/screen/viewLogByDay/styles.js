@@ -1,5 +1,4 @@
 import {StyleSheet} from 'react-native';
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 
 export default StyleSheet.create({
 
@@ -25,22 +24,33 @@ export default StyleSheet.create({
   },
   subCard: {
     flexDirection: 'row',
-    justifyContent: 'space-around', 
+    justifyContent: 'center', 
     alignItems: 'center',
     paddingHorizontal: 0,
   },
   buttonDateTime: {
-    width: '40%',
+    minWidth: 50,
   },
-  inputDateTime: {
-    width: '60%',
+  buttonDateTimeText: {
+    fontSize: 50,
+    fontWeight: 'bold',
+  },
+  dateText: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   card: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center', 
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
+  },
+  dateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 150,
+    minHeight: 45,
   },
   captionText: {
     alignSelf: 'flex-start'
