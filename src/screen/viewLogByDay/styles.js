@@ -62,8 +62,12 @@ export default StyleSheet.create({
     flexDirection: 'row',
 
   },
-  deleteText: {
+  mealText: {
     marginLeft: 'auto',
+  },
+  cardContainer: {
+    flex: 1,
+    paddingBottom: 15,
   },
   foodCard: {
     flex: 1,
@@ -72,7 +76,8 @@ export default StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     paddingHorizontal: 5,
-    marginVertical: 8,
+    marginTop: 15,
+    marginHorizontal: 10,
     borderRadius: 8,
   },
   foodText: {
