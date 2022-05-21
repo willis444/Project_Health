@@ -28,6 +28,5 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly', 
     alignItems: 'center',
-    paddingBottom: 50,
   },
 });

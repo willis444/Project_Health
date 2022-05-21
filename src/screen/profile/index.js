@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView, View, ScrollView } from 'react-native';
 import styles from './styles';
 import { Layout, Input, Text, Toggle, Button } from '@ui-kitten/components';
 import { Spacer, LoadingSpinner } from '../../../custom_components';
@@ -7,10 +7,12 @@ import { toastMessage } from '../../../custom_components';
 import { updateProfile } from '../../../axios/user';
 import { setisLoading, 
          retrieveUserProfile,
+         setUserGender,
          setIsPork,
          setIsBeef,
          setIsVegetarian,
-         setIsSeafood, } from '../../store/app/appSlice'
+         setIsSeafood,
+          } from '../../store/app/appSlice'
 import { useDispatch, useSelector } from 'react-redux';
 
 export const ProfileScreen = ({ navigation }) => {
@@ -33,6 +35,7 @@ export const ProfileScreen = ({ navigation }) => {
   const valueRole = useSelector(state => state.app.user_role);
 
   // state for toogle bar
+  const gender = useSelector(state => state.app.user_gender);
   const isPork = useSelector(state => state.app.isPork);
   const isBeef = useSelector(state => state.app.isBeef);
   const isVegetarian = useSelector(state => state.app.isVegetarian);
@@ -41,11 +44,15 @@ export const ProfileScreen = ({ navigation }) => {
   // update profile function
   async function updateUserProfile() {
     dispatch(setisLoading(true));
+    const user_gender = gender;
     const data = {
-      "isPork": isPork,
-      "isBeef": isBeef,
-      "isVegetarian": isVegetarian,
-      "isSeafood": isSeafood,
+        user_gender: user_gender,
+        eating_habits: {
+          "isPork": isPork,
+          "isBeef": isBeef,
+          "isVegetarian": isVegetarian,
+          "isSeafood": isSeafood,
+        }
     }
     const result = await updateProfile(data);
     dispatch(retrieveUserProfile());
@@ -55,6 +62,14 @@ export const ProfileScreen = ({ navigation }) => {
   const cancel = () => {
     navigateToDashboard();
   }
+
+  const onCheckedGender = () => {
+    if (gender=="male") {
+      dispatch(setUserGender("female"));
+    } else {
+      dispatch(setUserGender("male"));
+    }
+  };
 
   // on toogle action
   const onCheckedPork = () => {
@@ -97,62 +112,73 @@ export const ProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{flex:1}}>
-        {/* if is loading== true, show loading screen */}
-        {isLoading==true ? <LoadingSpinner/> : null}
-      <Layout style={styles.card}>
-        <Text style={styles.title}>Profile</Text>
-        <Spacer />
-        <Input
-          label='User ID'
-          value={valueID}
-          disabled={true}
-          onChangeText={nextValue => setValueID(nextValue)}
-        />
-        <Spacer height={20}/>
-        <Input
-          label='User Role'
-          value={valueRole}
-          disabled={true}
-        />
-        <Spacer height={20}/>
-        <Text style={styles.content}>I am a PORK eater</Text>
+      <Layout style={{flex:1}}>
+        <ScrollView style={{flexGrow: 1}}>
+          {/* if is loading== true, show loading screen */}
+          {isLoading==true ? <LoadingSpinner/> : null}
+        <Layout style={styles.card}>
+          <Text style={styles.title}>Profile</Text>
+          <Spacer />
+          <Input
+            label='User ID'
+            value={valueID}
+            disabled={true}
+            onChangeText={nextValue => setValueID(nextValue)}
+          />
+          <Spacer height={20}/>
+          <Input
+            label='User Role'
+            value={valueRole}
+            disabled={true}
+          />
+          <Spacer height={20}/>
+          <Text style={styles.content}>I am a {gender == "male"?"male":"female"}</Text>
+          <Spacer/>
+          <Toggle style={styles.toggle}
+                  status= {gender=='male'?'success':'danger'}
+                  checked={gender=='male'?true:false} 
+                  onChange={onCheckedGender}>
+          </Toggle>
+          <Spacer height={20}/>
+          <Text style={styles.content}>I am a PORK eater</Text>
+          <Spacer/>
+          <Toggle style={styles.toggle}
+                  status= {isPork?'success':'danger'}
+                  checked={isPork} 
+                  onChange={onCheckedPork}>
+          </Toggle>
+          <Spacer height={20}/>
+          <Text style={styles.content}>I am a BEEF eater</Text>
+          <Spacer/>
+          <Toggle style={styles.toggle}
+                  status= {isBeef?'success':'danger'}
+                  checked={isBeef} 
+                  onChange={onCheckedBeef}>
+          </Toggle>
+          <Spacer height={20}/>
+          <Text style={styles.content}>I eat SEAFOOD</Text>
+          <Spacer/>
+          <Toggle style={styles.toggle}
+                  status= {isSeafood?'success':'danger'}
+                  checked={isSeafood} 
+                  onChange={onCheckedSeafood}>
+          </Toggle>
+          <Spacer height={20}/>
+          <Text style={styles.content}>I am a VEGETARIAN</Text>
+          <Spacer/>
+          <Toggle style={styles.toggle}
+                  status= {isVegetarian?'success':'danger'}
+                  checked={isVegetarian} 
+                  onChange={onCheckedVegetarian}>
+          </Toggle>
+        </Layout>
         <Spacer/>
-        <Toggle style={styles.toggle}
-                status= {isPork?'success':'danger'}
-                checked={isPork} 
-                onChange={onCheckedPork}>
-        </Toggle>
-        <Spacer height={20}/>
-        <Text style={styles.content}>I am a BEEF eater</Text>
-        <Spacer/>
-        <Toggle style={styles.toggle}
-                status= {isBeef?'success':'danger'}
-                checked={isBeef} 
-                onChange={onCheckedBeef}>
-        </Toggle>
-        <Spacer height={20}/>
-        <Text style={styles.content}>I eat SEAFOOD</Text>
-        <Spacer/>
-        <Toggle style={styles.toggle}
-                status= {isSeafood?'success':'danger'}
-                checked={isSeafood} 
-                onChange={onCheckedSeafood}>
-        </Toggle>
-        <Spacer height={20}/>
-        <Text style={styles.content}>I am a VEGETARIAN</Text>
-        <Spacer/>
-        <Toggle style={styles.toggle}
-                status= {isVegetarian?'success':'danger'}
-                checked={isVegetarian} 
-                onChange={onCheckedVegetarian}>
-        </Toggle>
+        <Layout style={styles.subCard}>
+          <Button onPress={() => updateUserProfile()}>Update Profile</Button>
+          <Button onPress={() => cancel()}>Cancel</Button>
+        </Layout>
+        </ScrollView>
       </Layout>
-      <Layout style={styles.subCard}>
-        <Button onPress={() => updateUserProfile()}>Update Profile</Button>
-        <Button onPress={() => cancel()}>Cancel</Button>
-      </Layout>
-      </View>
     </SafeAreaView>
   );
 };

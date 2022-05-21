@@ -40,7 +40,13 @@ const CalendarIcon = (props) => (
 const [rawDateTime, setRawDateTime] = useState(new Date());
 const [date, setDate] = useState('');
 
-const navigateToViewFoodNutrition = (data, size) => {
+const navigateToViewFoodNutrition = (data, count) => {
+  var size;
+  count.forEach(element => {
+    if (element.food_id == data._id) {
+      size = element.size
+    }
+  })
   navigation.navigate('ViewFoodNutrition', {data, size});
 }
 
@@ -134,7 +140,7 @@ const formatLog = async() => {
       if (element.log_meal_type == "Breakfast") { // match the meal type with the string
         let newObj = mealTime; // declare temporary object
         var formatted = convertTime(element.log_datetime); // convert the raw time into human readible time
-        mealTime.Breakfast = formatted; // mutate the temporary object with the converted time
+        newObj.Breakfast = formatted; // mutate the temporary object with the converted time
         setMealTime(newObj); // replace the state object with the temporary object
         element.log_serving_size.forEach(element => { // loop the log serving size
           setBreakfastCount(currentArray => [...currentArray, element]) // put the data in current loop into the array state
@@ -145,7 +151,7 @@ const formatLog = async() => {
       } else if (element.log_meal_type == "Lunch") {
         let newObj = mealTime; // declare temporary object
         var formatted = convertTime(element.log_datetime); // convert the raw time into human readible time
-        mealTime.Lunch = formatted; // mutate the temporary object
+        newObj.Lunch = formatted; // mutate the temporary object
         setMealTime(newObj); // replace the state object with the temporary object
         element.log_serving_size.forEach(element => { // loop the log serving size
           setLunchCount(currentArray => [...currentArray, element]) // put the data in current loop into the array state
@@ -156,7 +162,7 @@ const formatLog = async() => {
       } else if (element.log_meal_type == "Dinner") {
         let newObj = mealTime; // declare temporary object
         var formatted = convertTime(element.log_datetime); // convert the raw time into human readible time
-        mealTime.Dinner = formatted; // mutate the temporary object
+        newObj.Dinner = formatted; // mutate the temporary object
         setMealTime(newObj); // replace the state object with the temporary object
         element.log_serving_size.forEach(element => { // loop the log serving size
           setDinnerCount(currentArray => [...currentArray, element]) // put the data in current loop into the array state
@@ -224,7 +230,7 @@ const RenderDinner = () => {
   var size;
   return Dinner.map((element, index) => // map the array to get the element inside, then render the component based on the element in the array
     <Layout style={styles.cardContainer} level='3'>
-      <Pressable onPress={() => navigateToViewFoodNutrition(element, LunchCount)}>
+      <Pressable onPress={() => navigateToViewFoodNutrition(element, DinnerCount)}>
         <Layout style={styles.foodCard} level='2'>
           <Text style={styles.foodText}>{index + 1}. {language == 'ms'?element.food_alt_name: element.food_name}</Text>
           {/* input to show the serving size */}

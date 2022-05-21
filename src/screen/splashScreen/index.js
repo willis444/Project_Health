@@ -2,7 +2,8 @@ import React from 'react';
 import { SafeAreaView } from 'react-native';
 import { Divider, Icon, Layout, Text, TopNavigation, TopNavigationAction, Button } from '@ui-kitten/components';
 import { Spacer } from '../../../custom_components';
-import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { retrieveUserProfile } from '../../store/app/appSlice';
 import { checkJWT } from '../../../AsyncStorage/store';
 
 const BackIcon = (props) => (
@@ -10,6 +11,8 @@ const BackIcon = (props) => (
 );
 
 export const SplashScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+
   const navigateBack = () => {
     navigation.goBack();
   };
@@ -23,6 +26,7 @@ export const SplashScreen = ({ navigation }) => {
   async function checkLogin() {
     const isLogin = await checkJWT(); // get login status from async storage
     if (isLogin === true) { // if the result is true
+      dispatch(retrieveUserProfile());
       navigation.reset({ // navigate user to homescreen and reset the route
         index: 0,
         routes: [{ name: 'Home' }],
