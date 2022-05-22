@@ -27,8 +27,12 @@ export const HomeScreen = ({ navigation }) => {
     navigation.navigate('LogFood');
   }
 
-  const navigateLogFoodBy = () => {
+  const navigateViewLoggedFood = () => {
     navigation.navigate('ViewLogByDay');
+  }
+
+  const navigateNutrientReport = () => {
+    navigation.navigate('ViewNutrientReport');
   }
 
   const logout = () => {
@@ -50,7 +54,9 @@ export const HomeScreen = ({ navigation }) => {
         <Spacer/>
         <Button style={{ marginVertical: 4 }} onPress={() => navigateLogFood()}>Log Food</Button>
         <Spacer/>
-        <Button style={{ marginVertical: 4 }} onPress={() => navigateLogFoodBy()}>View Logged Food</Button>
+        <Button style={{ marginVertical: 4 }} onPress={() => navigateViewLoggedFood()}>View Logged Food</Button>
+        <Spacer/>
+        <Button style={{ marginVertical: 4 }} onPress={() => navigateNutrientReport()}>View Nutrient Report</Button>
         <Spacer/>
         <Button style={{ marginVertical: 4 }} onPress={() => logout()}>Logout</Button>
       </Layout>

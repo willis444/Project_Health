@@ -5,11 +5,11 @@ import { SplashScreen } from '../screen/splashScreen/index';
 import { LoginScreen } from '../auth/login';
 import { RegisterScreen } from '../auth/register/index';
 import { HomeScreen } from '../screen/dashboard/index';
-import { DetailsScreen } from '../screen/details';
 import { ProfileScreen } from '../screen/profile/index';
 import { LogFoodScreen } from '../screen/logFood/index';
 import { viewLogByDay } from '../screen/viewLogByDay/index';
 import { viewFoodNutrition } from '../screen/viewFoodNutrition/index';
+import { viewNutrientReport } from '../screen/viewNutrientReport';
 import { useSelector, useDispatch } from 'react-redux';
 
 const { Navigator, Screen } = createStackNavigator();
@@ -41,10 +41,10 @@ export const AppNavigator = () => {
         <Screen name='Register' component={RegisterScreen}/>
         <Screen name='Home' component={HomeScreen}/>
         <Screen name='Profile' component={ProfileScreen}/>
-        <Screen name='Details' component={DetailsScreen}/>
         <Screen name='LogFood' component={LogFoodScreen}/>
         <Screen name='ViewLogByDay' component={viewLogByDay}/>
         <Screen name='ViewFoodNutrition' component={viewFoodNutrition}/>
+        <Screen name='ViewNutrientReport' component={viewNutrientReport}/>
       </Navigator>
     );
 
