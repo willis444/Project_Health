@@ -7,7 +7,8 @@ import { toastMessage } from '../../../custom_components';
 import { setisLoading } from '../../store/app/appSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import ProgressBar from 'react-native-progress/Bar';
-import { current } from '@reduxjs/toolkit';
+import { getLogByDay } from '../../../axios/food';
+
 
 export const viewNutrientReport  = ({ navigation, route }) => {
 
@@ -32,19 +33,27 @@ export const viewNutrientReport  = ({ navigation, route }) => {
   const selectedMonth = month[selectedMonthIndex.row]; // state for display selected month in the selection bar
   const selectedWeek = displayDate[selectedWeekIndex.row]; // state for display selected month in the selection bar
   
+  // state for data
+  const [data, setData] = useState([]);                                             // state for data fetched
+  const [run, setRun] = useState(false);                                            // state to determine if the analysis function should run
+
   // state for nutrient
-  const macro = ['calories', 'carbohydrates', 'fat', 'protein'];                    // declare array for macro nutrient
-  const macroUnit = ['kcal', 'g', 'g', 'g'];                                        // array for macronutrient units
-  const macroRequiredMale = [2440, 366, 65, 62];                                    // array for male required macronutrient
-  const macroRequiredFemale = [2000, 300, 55, 55];                                  // array for female required macronutrient
-  const [macroEaten, setMacroEaten] = useState([]);                                 // array for eaten macronutrient
-  const [macroCalculated, setMacroCalculated] = useState([]);                       // array for calculated macronutrient
-  const micro = ['sodium', 'potassium', 'vitaminA', 'vitaminC', 'calcium', 'iron']; // array for micro nutrient
-  const microUnit = ['mg', 'mg', 'mcg', 'mg', 'mg', 'mg'];                          // array for micronutrient units
-  const microRequiredMale = [1500, 4700, 600, 70, 800, 14];                         // array for male required micronutrient
-  const microRequiredFemale = [1500, 4700, 500, 70, 800, 29];                       // array for female required micronutrient
-  const [microEaten, setMicroEaten] = useState([]);                                 // array for eaten micronutrient
-  const [microCalculated, setMicroCalculated] = useState([]);                       // array for calculated micronutrient
+  const macro = ['calories', 'carbohydrates', 'fat', 'protein'];                        // declare array for macro nutrient
+  const macroUnit = ['kcal', 'g', 'g', 'g'];                                            // array for macronutrient units
+  const macroRequiredMaleSingle = [2440, 366, 65, 62];                                  // array for male required macronutrient for one day
+  const macroRequiredFemaleSingle = [2000, 300, 55, 53];                                // array for female required macronutrient for one day
+  const [macroRequiredMale, setMacroRequiredMale] = useState([0, 0, 0, 0]);             // array for male requried macronutrient
+  const [macroRequiredFemale, setMacroRequiredFemale] = useState([0, 0, 0, 0]);         // array for female requried macronutrient
+  const [macroEaten, setMacroEaten] = useState([0, 0, 0, 0]);                           // array for eaten macronutrient
+  const [macroPercent, setMacroPercent] = useState([0, 0, 0, 0]);                       // array for calculated macronutrient
+  const micro = ['sodium', 'potassium', 'vitaminA', 'vitaminC', 'calcium', 'iron'];     // array for micro nutrient
+  const microUnit = ['mg', 'mg', 'mcg', 'mg', 'mg', 'mg'];                              // array for micronutrient units
+  const microRequiredMaleSingle = [1500, 4700, 600, 70, 800, 14];                       // array for male required micronutrient
+  const microRequiredFemaleSingle = [1500, 4700, 500, 70, 800, 29];                     // array for female required micronutrient
+  const [microRequiredMale, setMicroRequiredMale] = useState([0, 0, 0, 0, 0, 0, 0]);    // array for male requried micronutrient
+  const [microRequiredFemale, setMicroRequiredFemale] = useState([0, 0, 0, 0, 0, 0, 0]);// array for male requried micronutrient
+  const [microEaten, setMicroEaten] = useState([0, 0, 0, 0, 0, 0]);                     // array for eaten micronutrient
+  const [microPercent, setMicroPercent] = useState([0, 0, 0, 0, 0, 0]);                 // array for calculated micronutrient
 
   const navigateToDashboard = () => {
     navigation.navigate('Home');
@@ -52,15 +61,13 @@ export const viewNutrientReport  = ({ navigation, route }) => {
 
 const RenderMacroNutreint = () => {
   return macro.map((element, index) => 
-    <Layout style={styles.cardContainer} level='3'>
-      <Layout style={styles.nutrientCard} level='1'>
-        <Layout style={styles.subNutrientCard} level='1'>
-          <Text style={styles.nutrientText}>{element} {macroEaten[index]}/{gender == 'male'?macroRequiredMale[index]:macroRequiredFemale[index]} ({macroUnit[index]})</Text>
-          <Text style = {styles.percentageText}>{(macroCalculated[index]*100).toFixed(2)}%</Text>
-        </Layout>
-        <Layout style={styles.loadingBarCard} level='1'>
-        <ProgressBar progress={macroCalculated[index]} width={360} />
-        </Layout>
+    <Layout style={styles.nutrientCard} level='1'>
+      <Layout style={styles.subNutrientCard} level='1'>
+        <Text style={styles.nutrientText}>{element} {macroEaten[index]}/{gender == 'male'?macroRequiredMale[index]:macroRequiredFemale[index]} ({macroUnit[index]})</Text>
+        <Text style = {styles.percentageText}>{(macroPercent[index]*100).toFixed(2)}%</Text>
+      </Layout>
+      <Layout style={styles.loadingBarCard} level='1'>
+      <ProgressBar progress={macroPercent[index]} width={360} />
       </Layout>
     </Layout>
   )
@@ -68,17 +75,15 @@ const RenderMacroNutreint = () => {
 
 const RenderMicroNutreint = () => {
   return micro.map((element, index) => 
-    <Layout style={styles.cardContainer} level='3'>
-      <Layout style={styles.nutrientCard} level='1'>
-      <Layout style={styles.subNutrientCard} level='1'>
-          <Text style={styles.nutrientText}>{element} {microEaten[index]}/{gender == 'male'?microRequiredMale[index]:microRequiredFemale[index]} ({microUnit[index]})</Text>
-          <Text style = {styles.percentageText}>{(microCalculated[index]*100).toFixed(2)}%</Text>
-        </Layout>
-        <Layout style={styles.loadingBarCard} level='1'>
-        <ProgressBar progress={microCalculated[index]} width={360} />
-        </Layout>
+  <Layout style={styles.nutrientCard} level='1'>
+    <Layout style={styles.subNutrientCard} level='1'>
+        <Text style={styles.nutrientText}>{element} {microEaten[index]}/{gender == 'male'?microRequiredMale[index]:microRequiredFemale[index]} ({microUnit[index]})</Text>
+        <Text style = {styles.percentageText}>{(microPercent[index]*100).toFixed(2)}%</Text>
       </Layout>
-    </Layout>
+      <Layout style={styles.loadingBarCard} level='1'>
+      <ProgressBar progress={microPercent[index]} width={360} />
+      </Layout>
+  </Layout>
   )
 };
 
@@ -87,6 +92,14 @@ const RenderMicroNutreint = () => {
 // https://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
 function getDaysInMonth (year, month) {
   return new Date(year, month+1, 0).getDate();
+}
+
+// function to get the days in between 2 dates
+// https://stackoverflow.com/questions/3224834/get-difference-between-2-dates-in-javascript
+function getDaysBetween (startDate, Endate) {
+  const diffTime = Math.abs(Endate - startDate); // get different time in ms for the 2 dates
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // convert the seconds into days
+  return diffDays;
 }
 
 function convertRawDate (rawdate, type) {
@@ -115,9 +128,9 @@ const getDateForSelectedMonth = () => {
   var start;
   var end;
 
-  var startArray = [];
-  var endArray = [];
-  var convertedArray = [];
+  var startArray = ['select'];
+  var endArray = ['select'];
+  var convertedArray = ['Select Week'];
 
   if (daysInMonth == 28) { // if the total day is 28, means it is february
     for (let i = 1; i<=4; i++) {
@@ -129,7 +142,7 @@ const getDateForSelectedMonth = () => {
       var convertedStart = convertRawDate(start, "start"); // get convert start date
       var convertedEnd = convertRawDate(end, "end"); // get convert start date
       var concated = (convertedStart + ' to ' + convertedEnd); // combine the start and end date
-      convertedArray.push(concated); // pusht he concated date into the array
+      convertedArray.push(concated); // push the concated date into the array
     }
   } else { // else, no special handling needed for other month
       for (let i = 1; i<=5; i++) {
@@ -161,6 +174,57 @@ const getDateForSelectedMonth = () => {
   })
 };
 
+const setRequiredNutrient = (days) => {
+  // set required nutrient for macronutrient
+  if (gender=='male') {
+    let newArr = [...macroRequiredMaleSingle]; // copy the data from the state array
+    newArr.forEach((element, index) => { // loop the new array
+      newArr[index] = newArr[index] * days; // multiply the required nutrient by days
+    })
+    setMacroRequiredMale(newArr); // update the state array
+  } else {
+    let newArr = [...macroRequiredFemaleSingle]; // copy the data from the state array
+    newArr.forEach((element, index) => { // loop the new array
+      newArr[index] = newArr[index] * days; // multiply the required nutrient by days
+    })
+    setMacroRequiredFemale(newArr); // update the state array
+  }
+  // set required nutrient for micronutrient
+  if (gender=='male') {
+    let newArr = [...microRequiredMaleSingle]; // copy the data from the state array
+    newArr.forEach((element, index) => { // loop the new array
+      newArr[index] = newArr[index] * days; // multiply the required nutrient by days
+    })
+    setMicroRequiredMale(newArr);
+  } else {
+    let newArr = [...microRequiredFemaleSingle]; // copy the data from the state array
+    newArr.forEach((element, index) => { // loop the new array
+      newArr[index] = newArr[index] * days; // multiply the required nutrient by days
+    })
+    setMicroRequiredFemale(newArr);
+  }
+}
+
+const retrieveData = async () => {
+  if (selectedWeekIndex.row == 0) { // if the use doesn't select any week, return null
+    return null;
+  } else {
+    const startDate = new Date (rawStartDate[selectedWeekIndex-1]); // define start date
+    const endDate = new Date (rawEndDate[selectedWeekIndex-1]); // define end date
+    const days = getDaysBetween(startDate, endDate); // invoke function to get the days in between 2 dates
+    setRequiredNutrient(days); // call the function to set required nutrient
+    const result = await getLogByDay(startDate, endDate); // call the api
+    if (result) { // if data is not null
+        result.forEach(element => { // loop the result array 
+        setData(currentArray => [...currentArray, element]); // put the element in current loop into the state array
+      });
+      setRun(true); // after the all the element in the result has been put into the state, set run to true to trigger the analysis function
+    } else {
+      return null;
+    };
+  }
+}
+
 // function to render option for the select
 // https://stackoverflow.com/questions/64301663/how-to-pass-dynamic-array-in-ui-kitten-v5-select
 const renderOption = (title) => (
@@ -175,6 +239,72 @@ useEffect(() => { // useeffect is used to make sure the function only runs when 
   setRawEndDate([]);
   getDateForSelectedMonth(); //invoke function
 }, [selectedMonthIndex]);
+
+useEffect(async () => {
+  setRun(false); // set run to false
+  setData([]); // clear data array
+  setMacroPercent([0, 0, 0, 0]); // reset the array state
+  setMicroPercent([0, 0, 0, 0, 0, 0]); // reset the array state
+  setMacroEaten([0, 0, 0, 0]); // reset the array state
+  setMicroEaten([0, 0, 0, 0, 0, 0]); // reset the array state
+  await retrieveData(); // call function
+}, [selectedWeekIndex]) // runs when selected week index change
+
+const calculateMacroNutrient = () => {
+  var size;
+    if (data.length != 0) { // check if the state array length is 0
+      let newArrMacro = [...macroEaten]; // copy the current macroEaten state array and create a temporary array base on it
+      let newArrMicro = [...microEaten]; // copy the current microEatn state array and create a temporary array base on it
+      let newArrMacroPercent = [...macroPercent] // copy the current macroPercent state array and create a temporary array base on it
+      let newArrMicroPercent = [...microPercent] // copy the current microPercent state array and create a temporary array base on it
+        data.forEach((element, index) => { // forEach loop to loop through the data
+          element.food_details.forEach(food_data => { // forEach loop to loop through the logged food in the current data
+            element.log_serving_size.forEach(serving_count => { // forEach loop to loop through the stored sercing size in current data
+              if (food_data._id == serving_count.food_id) { // if the food_id matches
+                size = serving_count.size; // retrieve the storing size
+              }
+            })
+            macro.forEach((nutrient_name, index) => { // loop the macro state array
+              try {
+              var nutrient_value = food_data.food_nutrition_info.macronutrient[nutrient_name]; // get the nutrient based on the nutrient name
+              var multiplied = parseFloat((nutrient_value*size).toFixed(2)) // multiply the nutrient value based on the serving size
+              var toDouble = parseFloat(multiplied.toFixed(2));   // make it to 2 decimal places
+              var percent = parseFloat((toDouble/(gender=='male'?macroRequiredMale[index]:macroRequiredFemale[index])).toFixed(2)); // get percentage for the loading bar
+              newArrMacro[index] = (newArrMacro[index] + toDouble); // update the temporary array for nutrient
+              newArrMacroPercent[index] = (newArrMacroPercent[index] + percent); // update the temporary array for percentage
+              //var percent = parseFloat((multiplied))
+              } catch (error) {
+                console.log(error);
+              }
+            })
+            micro.forEach((nutrient_name, index) => { // loop the macro state array
+              try {
+              var nutrient_value = food_data.food_nutrition_info.micronutrient[nutrient_name]; // get the nutrient based on the nutrient name
+              var multiplied = parseFloat((nutrient_value*size)); // multiply the nutrient value based on the serving size
+              var toDouble = parseFloat(multiplied.toFixed(2));   // make it to 2 decimal places
+              var percent = parseFloat((toDouble/(gender=='male'?microRequiredMale[index]:microRequiredFemale[index])).toFixed(2)); // get percentage for the loading bar
+              newArrMicro[index] = (newArrMicro[index] + toDouble); // update the temporary array
+              newArrMicroPercent[index] = (newArrMicroPercent[index] + percent); // update the temporary array for percentage
+              //var percent = parseFloat((multiplied))
+              } catch (error) {
+                console.log(error);
+              }
+            })
+          })
+        })
+      setMacroEaten(newArrMacro); // replace the entire state array for macroEaten with the updated data
+      setMacroPercent(newArrMacroPercent); // replace the entire state array for macroPercent with the updated data
+      setMicroEaten(newArrMicro); // replace the entire state array for microEaten with the updated data
+      setMicroPercent(newArrMicroPercent); // replace the entire state array for macroPercent with the updated data
+    }
+}
+
+useEffect(() => {
+  if (run) {
+    calculateMacroNutrient();
+    //console.log(macroEaten);
+  }
+}, [run])
 
 return (
 <SafeAreaView style={{ flex: 1 }}>
@@ -202,16 +332,19 @@ return (
         {displayDate.map(renderOption)}
       </Select>
     <Spacer/>
+    {data.length>0 ? (
     <Layout>
-    <Spacer/>
-    <Layout style={styles.subContainer}>
-    <Text style={styles.subTitle}>Macronutrient</Text>
+        <Text style={styles.subTitle}>Macronutrient</Text>
+        <Layout style={styles.cardContainer} level='3'>
+        <RenderMacroNutreint/>
+        </Layout>
+      <Spacer/>
+        <Text style={styles.subTitle}>Micronutrient</Text>
+        <Layout style={styles.cardContainer} level='3'>
+        <RenderMicroNutreint/>
+        </Layout>
     </Layout>
-    {/* {singleServingSize?<RenderMacroNutreintSingle/>:<RenderMacroNutreint/>}  */}
-    </Layout>
-    <Spacer/>
-    <Text style={styles.subTitle}>Micronutrient</Text>
-    {/* {singleServingSize?<RenderMicroNutreintSingle/>:<RenderMicroNutreint/>} */}
+    ) : null}
     <Spacer/>
     </ScrollView>
   </Layout>

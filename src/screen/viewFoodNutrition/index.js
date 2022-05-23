@@ -27,7 +27,7 @@ export const viewFoodNutrition  = ({ navigation, route }) => {
   const macro = ['calories', 'carbohydrates', 'fat', 'protein'];                    // declare array for macro nutrient
   const macroUnit = ['kcal', 'g', 'g', 'g'];                                        // array for macronutrient units
   const macroRequiredMale = [2440, 366, 65, 62];                                    // array for male required macronutrient
-  const macroRequiredFemale = [2000, 300, 55, 55];                                  // array for female required macronutrient
+  const macroRequiredFemale = [2000, 300, 55, 53];                                  // array for female required macronutrient
   const [macroEaten, setMacroEaten] = useState([]);                                 // array for eaten macronutrient
   const [macroEatenSingle, setMacroEatenSingle] = useState([]);                     // array for single serving nutrient
   const [macroCalculatedSingle, setMacroCalculatedSingle] = useState([]);           // array for singlecalculated macronutrient
@@ -113,17 +113,17 @@ const calculateMacroSingle = async() => {
   if (gender == 'male') { // if the gender is male, use the data for male
     macro.forEach((element,index) => { //loop through the macro array
       var raw = data.food_nutrition_info.macronutrient[element]; // declare a temporary value to hold the result from the data
-      var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
-      var percent = parseFloat((filtered/macroRequiredMale[index]).toFixed(2)); // get the percentage for the loading bar
-      setMacroEatenSingle(currentArray => [...currentArray, filtered]); // push the filtered value into the state array
+      //var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
+      var percent = parseFloat((raw/macroRequiredMale[index]).toFixed(2)); // get the percentage for the loading bar
+      setMacroEatenSingle(currentArray => [...currentArray, raw]); // push the filtered value into the state array
       setMacroCalculatedSingle(currentArray => [...currentArray, percent]); // push the percentage into the state array
     })
   } else { // else, use the data for female
     macro.forEach((element,index) => { //loop through the macro array
       var raw = data.food_nutrition_info.macronutrient[element]; // declare a temporary value to hold the result from the data
-      var filtered = Number(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
-      var percent = Number((filtered/macroRequiredFemale[index]).toFixed(2)); // get the percentage for the loading bar
-      setMacroEatenSingle(currentArray => [...currentArray, filtered]); // push the filtered value into the state array
+      //var filtered = Number(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
+      var percent = Number((raw/macroRequiredFemale[index]).toFixed(2)); // get the percentage for the loading bar
+      setMacroEatenSingle(currentArray => [...currentArray, raw]); // push the filtered value into the state array
       setMacroCalculatedSingle(currentArray => [...currentArray, percent]); // push the percentage into the state array
     })
   }
@@ -134,18 +134,18 @@ const calculateMacro = async() => {
   if (gender == 'male') {
     macro.forEach((element,index) => { //loop through the macro array
       var raw = data.food_nutrition_info.macronutrient[element]; // declare a temporary value to hold the result from the data
-      var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
-      var multiplied = parseFloat((filtered*multiplier).toFixed(2)); // multiply the nutrient eaten with the serving size
-      var percent = parseFloat((filtered/macroRequiredMale[index]).toFixed(2))*multiplier; // get the percentage for the loading bar
+      //var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
+      var multiplied = parseFloat((raw*multiplier).toFixed(2)); // multiply the nutrient eaten with the serving size
+      var percent = parseFloat((raw/macroRequiredMale[index]).toFixed(2))*multiplier; // get the percentage for the loading bar
       setMacroEaten(currentArray => [...currentArray, multiplied]); // push the filtered value into the state array
       setMacroCalculated(currentArray => [...currentArray, percent]); // get the percentage for the loading bar and then push the percentage into the state array
     })
   } else {
     macro.forEach((element,index) => { //loop through the macro array
       var raw = data.food_nutrition_info.macronutrient[element]; // declare a temporary value to hold the result from the data
-      var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
-      var multiplied = parseFloat((filtered*multiplier).toFixed(2)); // multiply the nutrient eaten with the serving size
-      var percent = parseFloat((filtered/macroRequiredFemale[index]).toFixed(2))*multiplier; // get the percentage for the loading bar
+      //var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
+      var multiplied = parseFloat((raw*multiplier).toFixed(2)); // multiply the nutrient eaten with the serving size
+      var percent = parseFloat((raw/macroRequiredFemale[index]).toFixed(2))*multiplier; // get the percentage for the loading bar
       setMacroEaten(currentArray => [...currentArray, multiplied]); // push the filtered value into the state array
       setMacroCalculated(currentArray => [...currentArray,percent]); // get the percentage for the loading bar and then push the percentage into the state array
     })
@@ -156,17 +156,17 @@ const calculateMicroSingle = async() => {
   if (gender == 'male') { // if the gender is male, use the data for male
     micro.forEach((element,index) => { //loop through the macro array
       var raw = data.food_nutrition_info.micronutrient[element]; // declare a temporary value to hold the result from the data
-      var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
-      var percent = parseFloat((filtered/microRequiredMale[index]).toFixed(2)); // get the percentage for the loading bar
-      setMicroEatenSingle(currentArray => [...currentArray, filtered]); // push the filtered value into the state array
+      //var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
+      var percent = parseFloat((raw/microRequiredMale[index]).toFixed(2)); // get the percentage for the loading bar
+      setMicroEatenSingle(currentArray => [...currentArray, raw]); // push the filtered value into the state array
       setMicroCalculatedSingle(currentArray => [...currentArray, percent]); // get the percentage for the loading bar and then push the percentage into the state array
     })
   } else { // else, use the data for female
     micro.forEach((element,index) => { //loop through the macro array
       var raw = data.food_nutrition_info.micronutrient[element]; // declare a temporary value to hold the result from the data
-      var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
-      var percent = parseFloat((filtered/microRequiredFemale[index]).toFixed(2)); // get the percentage for the loading bar
-      setMicroEatenSingle(currentArray => [...currentArray, filtered]); // push the filtered value into the state array
+      //var filtered = parseFloat(raw.match(/[\d\.]+/)).toFixed(2); // apply regex to extract the float from the value
+      var percent = parseFloat((raw/microRequiredFemale[index]).toFixed(2)); // get the percentage for the loading bar
+      setMicroEatenSingle(currentArray => [...currentArray, raw]); // push the filtered value into the state array
       setMicroCalculatedSingle(currentArray => [...currentArray, percent]); // get the percentage for the loading bar and then push the percentage into the state array
     })
   }
@@ -177,18 +177,18 @@ const calculateMicro = async() => {
   if (gender == 'male') {
     micro.forEach((element,index) => { //loop through the macro array
       var raw = data.food_nutrition_info.micronutrient[element]; // declare a temporary value to hold the result from the data
-      var filtered = parseFloat(raw.match(/[\d\.]+/)); // apply regex to extract the float from the value
-      var multiplied = parseFloat((filtered*multiplier).toFixed(2)); // multiply the nutrient eaten with the serving size
-      var percent = parseFloat((filtered/microRequiredMale[index]).toFixed(2))*multiplier; // get the percentage for the loading bar
+      //var filtered = parseFloat(raw.match(/[\d\.]+/)); // apply regex to extract the float from the value
+      var multiplied = parseFloat((raw*multiplier).toFixed(2)); // multiply the nutrient eaten with the serving size
+      var percent = parseFloat((raw/microRequiredMale[index]).toFixed(2))*multiplier; // get the percentage for the loading bar
       setMicroEaten(currentArray => [...currentArray, multiplied]); // push the filtered value into the state array
       setMicroCalculated(currentArray => [...currentArray, percent]); // get the percentage for the loading bar and then push the percentage into the state array
     })
   } else {
     micro.forEach((element,index) => { //loop through the macro array
       var raw = data.food_nutrition_info.micronutrient[element]; // declare a temporary value to hold the result from the data
-      var filtered = parseFloat(raw.match(/[\d\.]+/)); // apply regex to extract the float from the value
-      var multiplied = parseFloat((filtered*multiplier).toFixed(2)); // multiply the nutrient eaten with the serving size
-      var percent = parseFloat((filtered/microRequiredFemale[index]).toFixed(2))*multiplier; // get the percentage for the loading bar
+      //var filtered = parseFloat(raw.match(/[\d\.]+/)); // apply regex to extract the float from the value
+      var multiplied = parseFloat((raw*multiplier).toFixed(2)); // multiply the nutrient eaten with the serving size
+      var percent = parseFloat((raw/microRequiredFemale[index]).toFixed(2))*multiplier; // get the percentage for the loading bar
       setMicroEaten(currentArray => [...currentArray, multiplied]); // push the filtered value into the state array
       setMicroCalculated(currentArray => [...currentArray, percent]); // get the percentage for the loading bar and then push the percentage into the state array
     })

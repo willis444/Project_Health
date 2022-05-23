@@ -33,13 +33,14 @@ export default StyleSheet.create({
   cardContainer: {
     flex: 1,
     paddingBottom: 10,
+    borderRadius: 8,
   },
   nutrientCard: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     paddingHorizontal: 5,
-    marginTop: 5,
+    marginTop: 10,
     marginHorizontal: 10,
     borderRadius: 8,
   },
