@@ -58,5 +58,10 @@ export default StyleSheet.create({
   },
   subNutrientCard: {
     flexDirection: 'row',
-  }
+  },
+  victoryLegend: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
 });

@@ -8,7 +8,7 @@ import { setisLoading } from '../../store/app/appSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import ProgressBar from 'react-native-progress/Bar';
 import { getLogByDay } from '../../../axios/food';
-
+import { VictoryChart, VictoryAxis, VictoryBar, VictoryTheme, VictoryStack, VictoryLegend } from 'victory-native';
 
 export const viewNutrientReport  = ({ navigation, route }) => {
 
@@ -44,7 +44,7 @@ export const viewNutrientReport  = ({ navigation, route }) => {
   const macroRequiredFemaleSingle = [2000, 300, 55, 53];                                // array for female required macronutrient for one day
   const [macroRequiredMale, setMacroRequiredMale] = useState([0, 0, 0, 0]);             // array for male requried macronutrient
   const [macroRequiredFemale, setMacroRequiredFemale] = useState([0, 0, 0, 0]);         // array for female requried macronutrient
-  const [macroEaten, setMacroEaten] = useState([0, 0, 0, 0]);                           // array for eaten macronutrient
+  const [macroEaten, setMacroEaten] = useState([0, 0, 0, 0]);                           // array for eaten macronutrient percentage for the progress bar
   const [macroPercent, setMacroPercent] = useState([0, 0, 0, 0]);                       // array for calculated macronutrient
   const micro = ['sodium', 'potassium', 'vitaminA', 'vitaminC', 'calcium', 'iron'];     // array for micro nutrient
   const microUnit = ['mg', 'mg', 'mcg', 'mg', 'mg', 'mg'];                              // array for micronutrient units
@@ -53,7 +53,14 @@ export const viewNutrientReport  = ({ navigation, route }) => {
   const [microRequiredMale, setMicroRequiredMale] = useState([0, 0, 0, 0, 0, 0, 0]);    // array for male requried micronutrient
   const [microRequiredFemale, setMicroRequiredFemale] = useState([0, 0, 0, 0, 0, 0, 0]);// array for male requried micronutrient
   const [microEaten, setMicroEaten] = useState([0, 0, 0, 0, 0, 0]);                     // array for eaten micronutrient
-  const [microPercent, setMicroPercent] = useState([0, 0, 0, 0, 0, 0]);                 // array for calculated micronutrient
+  const [microPercent, setMicroPercent] = useState([0, 0, 0, 0, 0, 0]);                 // array for calculated micronutrient percentage for the progress bar
+
+  // state for eating count
+  const [mealsCount, setMealsCount] = useState(0); // array for storing meals count based on total days in the selected week
+  const [onTimeCount, setOnTimeCount] = useState([{mealsType: 1, counts: 0}, {mealsType: 2, counts: 0}, {mealsType: 3, counts : 0}]); // array for storing meals on time count
+  const [earlyCount, setEarlyCount] = useState([{mealsType: 1, counts: 0}, {mealsType: 2, counts: 0}, {mealsType: 3, counts : 0}]); // array for storing meals early count
+  const [lateCount, setLateCount] = useState([{mealsType: 1, counts: 0}, {mealsType: 2, counts: 0}, {mealsType: 3, counts : 0}]); // array for storing meals late count
+  const [missedCount, setMissedCount] = useState([{mealsType: 1, counts: 0}, {mealsType: 2, counts: 0}, {mealsType: 3, counts : 0}]); // array for storing missed meals count
 
   const navigateToDashboard = () => {
     navigation.navigate('Home');
@@ -206,22 +213,32 @@ const setRequiredNutrient = (days) => {
 }
 
 const retrieveData = async () => {
-  if (selectedWeekIndex.row == 0) { // if the use doesn't select any week, return null
-    return null;
-  } else {
-    const startDate = new Date (rawStartDate[selectedWeekIndex-1]); // define start date
-    const endDate = new Date (rawEndDate[selectedWeekIndex-1]); // define end date
-    const days = getDaysBetween(startDate, endDate); // invoke function to get the days in between 2 dates
-    setRequiredNutrient(days); // call the function to set required nutrient
-    const result = await getLogByDay(startDate, endDate); // call the api
-    if (result) { // if data is not null
-        result.forEach(element => { // loop the result array 
-        setData(currentArray => [...currentArray, element]); // put the element in current loop into the state array
-      });
-      setRun(true); // after the all the element in the result has been put into the state, set run to true to trigger the analysis function
-    } else {
+  try {
+    dispatch(setisLoading(true)); // set is loading to true
+    if (selectedWeekIndex.row == 0) { // if the use doesn't select any week, return null
+      dispatch(setisLoading(false)); // set is loading to false
       return null;
-    };
+    } else {
+      const startDate = new Date (rawStartDate[selectedWeekIndex-1]); // define start date
+      const endDate = new Date (rawEndDate[selectedWeekIndex-1]); // define end date
+      const days = getDaysBetween(startDate, endDate); // invoke function to get the days in between 2 dates
+      setRequiredNutrient(days); // call the function to set required nutrient
+      setMealsCount(days); // set the meals count based on the days between state array
+      const result = await getLogByDay(startDate, endDate); // call the api
+      if (result != []) { // if data is not null
+          result.forEach(element => { // loop the result array 
+          setData(currentArray => [...currentArray, element]); // put the element in current loop into the state array
+        });
+        setRun(true); // after the all the element in the result has been put into the state, set run to true to trigger the analysis function
+      } else {
+        dispatch(setisLoading(false)); // set is loading to false
+        return null;
+      };
+    }
+  } catch (error) { // error handling
+    dispatch(setisLoading(false)); // set loading to false
+    console.log(error.message);
+    toastMessage('Opps, seems like the server is down, please try again later.');
   }
 }
 
@@ -299,10 +316,112 @@ const calculateMacroNutrient = () => {
     }
 }
 
+const checkTimeBreakfast = (datetime) => {
+  const time = new Date(datetime).getHours(); // get breakfast hour
+  var start = 7; // define start hour
+  var end = 10;  // define end hour
+  // check if the time is within the duration
+  if (time < start) {
+    return 'early';
+  } else if (time > end) {
+    return 'late';
+  } else {
+    return 'ontime';
+  }
+}
+
+const checkTimeLunch = (datetime) => {
+  const time = new Date(datetime).getHours(); // get breakfast hour
+  var start = 11; // define start hour
+  var end = 13;  // define end hour
+  // check if the time is within the duration
+  if (time < start) { 
+    return 'early';
+  } else if (time > end) {
+    return 'late';
+  } else {
+    return 'ontime';
+  }
+}
+
+const checkTimeDinner = (datetime) => {
+  const time = new Date(datetime).getHours(); // get breakfast hour
+  var start = 18; // define start hour
+  var end = 21;  // define end hour
+  // check if the time is within the duration
+  if (time < start) { 
+    return 'early';
+  } else if (time > end) {
+    return 'late';
+  } else {
+    return 'ontime';
+  }
+}
+
+const calculateMealTime = () => {
+  var breakfastOnTime = 0;
+  var breakfastEarly = 0;
+  var breakfastLate = 0;
+  var lunchOnTime = 0;
+  var lunchEarly = 0;
+  var lunchLate = 0;
+  var dinnerOnTime = 0;
+  var dinnerEarly = 0;
+  var dinnerLate = 0;
+  data.forEach(element => { // loop the data array
+    if (element.log_meal_type == 'Breakfast') {
+      var onTime; // declare variable to store the result of check breakfast time
+      onTime = checkTimeBreakfast(element.log_datetime) // invoke function to check breakfast time
+      // ternary operator to check if the breakfast is ontime, late or early.
+      // then increase the count for the respective variable
+      {onTime=='ontime'? (breakfastOnTime = breakfastOnTime + 1)
+       : onTime=='early'? (breakfastEarly = breakfastEarly + 1)
+       : (breakfastLate = breakfastLate + 1)
+      }
+    } else if (element.log_meal_type == 'Lunch') {
+      var onTime; // declare variable to store the result of check breakfast time
+      onTime = checkTimeLunch(element.log_datetime) // invoke function to check breakfast time
+      // ternary operator to check if the lunch is ontime, late or early.
+      // then increase the count for the respective variable
+      {onTime=='ontime'? (lunchOnTime = lunchOnTime + 1)
+       : onTime=='early'? (lunchEarly = lunchEarly + 1)
+       : (lunchLate = lunchLate + 1)
+      }
+    } else {
+      var onTime; // declare variable to store the result of check breakfast time
+      onTime = checkTimeDinner(element.log_datetime) // invoke function to check breakfast time
+      // ternary operator to check if the dinner is ontime, late or early.
+      // then increase the count for the respective variable
+      {onTime=='ontime'? (dinnerOnTime = dinnerOnTime + 1)
+       : onTime=='early'? (dinnerEarly = dinnerEarly + 1)
+       : (dinnerLate = dinnerLate + 1)
+      }
+    }
+  }) // end of for each loop
+  var missedBreakfast = mealsCount - (breakfastOnTime + breakfastEarly + breakfastLate); // calculate missed breakfast
+  var missedLunch = mealsCount - (lunchOnTime + lunchEarly + lunchOnTime); // calculate missed lunch
+  var missedDinner = mealsCount - (dinnerOnTime + dinnerEarly + dinnerLate); // calculate missed dinner
+  // declare an array and populate the meals count into it
+  // var onTimeArr = [{'mealsType': 'Breakfast', count: breakfastOnTime}, {'mealsType': 'Lunch', count: lunchOnTime}, {'mealsType': 'Dinner', count : dinnerOnTime}];
+  // var earlyArr = [{'mealsType': 'Breakfast', count: breakfastEarly}, {'mealsType': 'Lunch', count: lunchEarly}, {'mealsType': 'Dinner', count : dinnerEarly}];
+  // var lateArr = [{'mealsType': 'Breakfast', count: breakfastLate}, {'mealsType': 'Lunch', count: lunchLate}, {'mealsType': 'Dinner', count : dinnerLate}];
+  // var missedArr = [{'mealsType': 'Breakfast', count: missedBreakfast}, {'mealsType': 'Lunch', count: missedLunch}, {'mealsType': 'Dinner', count : missedDinner}];
+  var onTimeArr = [{mealsType: 1, counts: breakfastOnTime}, {mealsType: 2, counts: lunchOnTime}, {mealsType: 3, counts : dinnerOnTime}];
+  var earlyArr = [{mealsType: 1, counts: breakfastEarly}, {mealsType: 2, counts: lunchEarly}, {mealsType: 3, counts : dinnerEarly}];
+  var lateArr = [{mealsType: 1, counts: breakfastLate}, {mealsType: 2, counts: lunchLate}, {mealsType: 3, counts : dinnerLate}];
+  var missedArr = [{mealsType: 1, counts: missedBreakfast}, {mealsType: 2, counts: missedLunch}, {mealsType: 3, counts : missedDinner}];
+  // set the array into their respective state
+  setOnTimeCount(onTimeArr);
+  setEarlyCount(earlyArr);
+  setLateCount(lateArr);
+  setMissedCount(missedArr);
+}
+
 useEffect(() => {
   if (run) {
     calculateMacroNutrient();
-    //console.log(macroEaten);
+    calculateMealTime();
+    dispatch(setisLoading(false));
   }
 }, [run])
 
@@ -343,6 +462,59 @@ return (
         <Layout style={styles.cardContainer} level='3'>
         <RenderMicroNutreint/>
         </Layout>
+      <Spacer/>
+      <Text style={styles.subTitle}>Breakfast Time analysis</Text>
+      <VictoryChart
+        domainPadding={20}
+        theme={VictoryTheme.material}
+      >
+        <VictoryAxis
+          tickValues={[1, 2, 3]}
+          tickFormat={["Breakfast", "Lunch", "Dinner"]}
+        />
+        <VictoryAxis
+          dependentAxis
+          tickFormat={[1,2,3,4,5,6,7]}
+        />
+        <VictoryStack
+        colorScale={["#00ed64", "#f9ce09", "#4cc9ff", "#d01f31"]}
+        >
+          <VictoryBar
+            data={onTimeCount}
+            x="mealsType"
+            y="counts"
+          />
+          <VictoryBar
+            data={earlyCount}
+            x="mealsType"
+            y="counts"
+          />
+          <VictoryBar
+            data={lateCount}
+            x="mealsType"
+            y="counts"
+          />
+          <VictoryBar
+            data={missedCount}
+            x="mealsType"
+            y="counts"
+          />
+        </VictoryStack>
+      </VictoryChart>
+      <Layout style={styles.victoryLegend}>
+        <VictoryLegend
+            x={50} y={10}
+            title="Legend"
+            centerTitle
+            orientation="horizontal"
+            gutter={20}
+            style={{ border: { stroke: "black" } }}
+            colorScale={["#00ed64", "#f9ce09", "#4cc9ff", "#d01f31"]}
+            data={[
+              { name: "On Time" }, { name: "Early" }, { name: "Late" }, { name: "Missed"}
+            ]}
+        />
+      </Layout>
     </Layout>
     ) : null}
     <Spacer/>

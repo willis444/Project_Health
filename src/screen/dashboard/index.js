@@ -3,8 +3,8 @@ import { SafeAreaView } from 'react-native';
 import { Button, Layout, Icon } from '@ui-kitten/components';
 import { ThemeContext } from '../../theme/theme-context';
 import { destroyLoginSession } from '../../store/auth/authSlice';
-import { useDispatch } from 'react-redux';
-import { Spacer } from '../../../custom_components';
+import { useDispatch, useSelector } from 'react-redux';
+import { LoadingSpinner, Spacer } from '../../../custom_components';
 import { toastMessage } from '../../../custom_components';
 import { getProfile } from '../../../axios/user';
 import { clearJWT } from '../../../AsyncStorage/store';
@@ -12,6 +12,8 @@ import { clearJWT } from '../../../AsyncStorage/store';
 export const HomeScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
+
+  const isLoading = useSelector(state => state.app.isLoading.payload);
 
   const themeContext = useContext(ThemeContext);
 
@@ -47,19 +49,20 @@ export const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Button style={{ marginVertical: 4 }} onPress={() => navigateProfile()}>My Profile</Button>
-        <Spacer/>
-        <Button style={{ marginVertical: 4 }} onPress={themeContext.toggleTheme}>TOGGLE THEME</Button>
-        <Spacer/>
-        <Button style={{ marginVertical: 4 }} onPress={() => navigateLogFood()}>Log Food</Button>
-        <Spacer/>
-        <Button style={{ marginVertical: 4 }} onPress={() => navigateViewLoggedFood()}>View Logged Food</Button>
-        <Spacer/>
-        <Button style={{ marginVertical: 4 }} onPress={() => navigateNutrientReport()}>View Nutrient Report</Button>
-        <Spacer/>
-        <Button style={{ marginVertical: 4 }} onPress={() => logout()}>Logout</Button>
-      </Layout>
+      {/* {isLoading?<LoadingSpinner/>:null} */}
+        <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Button style={{ marginVertical: 4 }} onPress={() => navigateProfile()}>My Profile</Button>
+          <Spacer/>
+          <Button style={{ marginVertical: 4 }} onPress={themeContext.toggleTheme}>TOGGLE THEME</Button>
+          <Spacer/>
+          <Button style={{ marginVertical: 4 }} onPress={() => navigateLogFood()}>Log Food</Button>
+          <Spacer/>
+          <Button style={{ marginVertical: 4 }} onPress={() => navigateViewLoggedFood()}>View Logged Food</Button>
+          <Spacer/>
+          <Button style={{ marginVertical: 4 }} onPress={() => navigateNutrientReport()}>View Nutrient Report</Button>
+          <Spacer/>
+          <Button style={{ marginVertical: 4 }} onPress={() => logout()}>Logout</Button>
+        </Layout>
     </SafeAreaView>
   );
 };

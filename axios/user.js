@@ -31,7 +31,8 @@ const getProfile = async () => { // login function
             console.log(error.response.data);
             return(error.response.data);
           }
-      } catch { // else display error from axios
+      } catch (error) { // else display error from axios
+        console.log(error);
         return (error.message);
       }
   }
@@ -52,7 +53,8 @@ const updateProfile = async (data) => { // login function
             console.log(error.response.data);
             return(error.response.data);
           }
-      } catch { // else display error from axios
+      } catch (error) { // else display error from axios
+        console.log(error);
         return (error.message);
       }
   }

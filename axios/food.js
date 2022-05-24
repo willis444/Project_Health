@@ -73,7 +73,7 @@ const getLogByDay = async (startDate, endDate) => {
           console.log(error.response.data);
           return(error.response.data);
         }
-    } catch { // else display error from axios
+    } catch (error) { // else display error from axios
       return ("Opps, seemslike the server is down, please try again later.");
     }
   }
