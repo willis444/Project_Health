@@ -70,7 +70,7 @@ const RenderMicroNutreintSingle = () => {
           <Text style = {styles.percentageText}>{(microCalculatedSingle[index]*100).toFixed(2)}%</Text>
         </Layout>
         <Layout style={styles.loadingBarCard} level='1'>
-        <ProgressBar progress={microCalculatedSingle[index]} width={360} />
+        <ProgressBar style={{flex:1}} progress={microCalculatedSingle[index]} width={null} />
         </Layout>
       </Layout>
     </Layout>
@@ -86,7 +86,7 @@ const RenderMacroNutreint = () => {
           <Text style = {styles.percentageText}>{(macroCalculated[index]*100).toFixed(2)}%</Text>
         </Layout>
         <Layout style={styles.loadingBarCard} level='1'>
-        <ProgressBar progress={macroCalculated[index]} width={360} />
+        <ProgressBar style={{flex:1}} progress={macroCalculated[index]} width={null} />
         </Layout>
       </Layout>
     </Layout>

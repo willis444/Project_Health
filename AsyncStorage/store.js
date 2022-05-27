@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// logics for jwt token operation
 const storeJWT = async (token) => {
     if (!token) throw ("token is empty")
     try {

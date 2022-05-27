@@ -177,6 +177,7 @@ export const ProfileScreen = ({ navigation }) => {
           <Button onPress={() => updateUserProfile()}>Update Profile</Button>
           <Button onPress={() => cancel()}>Cancel</Button>
         </Layout>
+        <Spacer/>
         </ScrollView>
       </Layout>
     </SafeAreaView>

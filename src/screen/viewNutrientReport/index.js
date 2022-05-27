@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { SafeAreaView, View, ScrollView } from 'react-native';
 import styles from './styles';
 import { Layout, Input, Text, Toggle, Button, IndexPath, Select, SelectItem } from '@ui-kitten/components';
+import { ThemeContext } from '../../theme/theme-context';
 import { Spacer, LoadingSpinner } from '../../../custom_components';
 import { toastMessage } from '../../../custom_components';
 import { setisLoading } from '../../store/app/appSlice'
@@ -17,6 +18,10 @@ export const viewNutrientReport  = ({ navigation, route }) => {
   const isLoading = useSelector(state => state.app.isLoading.payload);
 
   const gender = useSelector(state => state.app.user_gender);
+
+  const themeContext = useContext(ThemeContext);
+
+  const currentTheme = themeContext.theme;
 
   // state for date
   const selectedDate = new Date();
@@ -74,7 +79,13 @@ const RenderMacroNutreint = () => {
         <Text style = {styles.percentageText}>{(macroPercent[index]*100).toFixed(2)}%</Text>
       </Layout>
       <Layout style={styles.loadingBarCard} level='1'>
-      <ProgressBar progress={macroPercent[index]} width={360} />
+      <ProgressBar 
+      style={{flex:1}}
+      color={macroPercent[index]>1.1?'#d01f31'
+       : macroPercent[index]<0.8?'#f9ce09'
+       : '#00ed64'}
+      progress={macroPercent[index]} 
+      width={null} />
       </Layout>
     </Layout>
   )
@@ -88,7 +99,13 @@ const RenderMicroNutreint = () => {
         <Text style = {styles.percentageText}>{(microPercent[index]*100).toFixed(2)}%</Text>
       </Layout>
       <Layout style={styles.loadingBarCard} level='1'>
-      <ProgressBar progress={microPercent[index]} width={360} />
+      <ProgressBar 
+      style={{flex:1}}
+      color={microPercent[index]>1.1?'#d01f31'
+       : microPercent[index]<0.8?'#f9ce09'
+       : '#00ed64'}
+      progress={microPercent[index]} 
+      width={null} />
       </Layout>
   </Layout>
   )
@@ -399,13 +416,9 @@ const calculateMealTime = () => {
     }
   }) // end of for each loop
   var missedBreakfast = mealsCount - (breakfastOnTime + breakfastEarly + breakfastLate); // calculate missed breakfast
-  var missedLunch = mealsCount - (lunchOnTime + lunchEarly + lunchOnTime); // calculate missed lunch
+  var missedLunch = mealsCount - (lunchOnTime + lunchEarly + lunchLate); // calculate missed lunch
   var missedDinner = mealsCount - (dinnerOnTime + dinnerEarly + dinnerLate); // calculate missed dinner
-  // declare an array and populate the meals count into it
-  // var onTimeArr = [{'mealsType': 'Breakfast', count: breakfastOnTime}, {'mealsType': 'Lunch', count: lunchOnTime}, {'mealsType': 'Dinner', count : dinnerOnTime}];
-  // var earlyArr = [{'mealsType': 'Breakfast', count: breakfastEarly}, {'mealsType': 'Lunch', count: lunchEarly}, {'mealsType': 'Dinner', count : dinnerEarly}];
-  // var lateArr = [{'mealsType': 'Breakfast', count: breakfastLate}, {'mealsType': 'Lunch', count: lunchLate}, {'mealsType': 'Dinner', count : dinnerLate}];
-  // var missedArr = [{'mealsType': 'Breakfast', count: missedBreakfast}, {'mealsType': 'Lunch', count: missedLunch}, {'mealsType': 'Dinner', count : missedDinner}];
+  // declare arrays and populate the meals count into it
   var onTimeArr = [{mealsType: 1, counts: breakfastOnTime}, {mealsType: 2, counts: lunchOnTime}, {mealsType: 3, counts : dinnerOnTime}];
   var earlyArr = [{mealsType: 1, counts: breakfastEarly}, {mealsType: 2, counts: lunchEarly}, {mealsType: 3, counts : dinnerEarly}];
   var lateArr = [{mealsType: 1, counts: breakfastLate}, {mealsType: 2, counts: lunchLate}, {mealsType: 3, counts : dinnerLate}];
@@ -471,10 +484,18 @@ return (
         <VictoryAxis
           tickValues={[1, 2, 3]}
           tickFormat={["Breakfast", "Lunch", "Dinner"]}
+          style={{
+            tickLabels: {fill: currentTheme=="dark"?"white":"black", fontSize: 15},
+            grid: {stroke: currentTheme=="dark"?"white":"black"},
+          }}
         />
         <VictoryAxis
           dependentAxis
           tickFormat={[1,2,3,4,5,6,7]}
+          style={{
+            tickLabels: {fill: currentTheme=="dark"?"white":"black", fontSize: 15},
+            grid: {stroke: currentTheme=="dark"?"white":"black"},
+          }}
         />
         <VictoryStack
         colorScale={["#00ed64", "#f9ce09", "#4cc9ff", "#d01f31"]}
@@ -504,20 +525,17 @@ return (
       <Layout style={styles.victoryLegend}>
         <VictoryLegend
             x={50} y={10}
-            title="Legend"
-            centerTitle
             orientation="horizontal"
             gutter={20}
-            style={{ border: { stroke: "black" } }}
             colorScale={["#00ed64", "#f9ce09", "#4cc9ff", "#d01f31"]}
             data={[
-              { name: "On Time" }, { name: "Early" }, { name: "Late" }, { name: "Missed"}
+              { name: "On Time", labels: { fill: currentTheme=="dark"?"white":"black" } }, { name: "Early", labels: { fill: currentTheme=="dark"?"white":"black" } }, 
+              { name: "Late", labels: { fill: currentTheme=="dark"?"white":"black" } }, { name: "Missed", labels: { fill: currentTheme=="dark"?"white":"black" }}
             ]}
         />
       </Layout>
     </Layout>
     ) : null}
-    <Spacer/>
     </ScrollView>
   </Layout>
 </SafeAreaView>

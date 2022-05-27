@@ -1,21 +1,19 @@
-import React, {useContext} from 'react';
-import { SafeAreaView } from 'react-native';
-import { Button, Layout, Icon } from '@ui-kitten/components';
+import React, {useContext, useState} from 'react';
+import styles from './styles';
+import { SafeAreaView, Pressable } from 'react-native';
+import { Button, Layout, Icon, Text, Toggle } from '@ui-kitten/components';
 import { ThemeContext } from '../../theme/theme-context';
-import { destroyLoginSession } from '../../store/auth/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { LoadingSpinner, Spacer } from '../../../custom_components';
-import { toastMessage } from '../../../custom_components';
-import { getProfile } from '../../../axios/user';
-import { clearJWT } from '../../../AsyncStorage/store';
+import notifee, { TimestampTrigger, TriggerType, RepeatFrequency, AndroidImportance } from '@notifee/react-native';
+import { DrawerActions } from '@react-navigation/native';
 
 export const HomeScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
-
   const isLoading = useSelector(state => state.app.isLoading.payload);
-
   const themeContext = useContext(ThemeContext);
+  const currentTheme = themeContext.theme;
 
   const navigateDetails = () => {
     navigation.navigate('Details');
@@ -37,32 +35,36 @@ export const HomeScreen = ({ navigation }) => {
     navigation.navigate('ViewNutrientReport');
   }
 
-  const logout = () => {
-    dispatch(destroyLoginSession()); // update the redux state by deleting the login status and token
-    clearJWT(); // clear the token stored in async storage
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Login' }],
-    });
-    toastMessage('Logged out Successfully');
+  const check = async() => {
+    const result = await notifee.getTriggerNotifications();
+    console.log(result);
   }
+
+const deleteNotification = async() => {
+  var current = await notifee.getTriggerNotificationIds();
+  await notifee.cancelTriggerNotifications(current);
+}
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* {isLoading?<LoadingSpinner/>:null} */}
-        <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Button style={{ marginVertical: 4 }} onPress={() => navigateProfile()}>My Profile</Button>
-          <Spacer/>
-          <Button style={{ marginVertical: 4 }} onPress={themeContext.toggleTheme}>TOGGLE THEME</Button>
-          <Spacer/>
-          <Button style={{ marginVertical: 4 }} onPress={() => navigateLogFood()}>Log Food</Button>
-          <Spacer/>
-          <Button style={{ marginVertical: 4 }} onPress={() => navigateViewLoggedFood()}>View Logged Food</Button>
-          <Spacer/>
-          <Button style={{ marginVertical: 4 }} onPress={() => navigateNutrientReport()}>View Nutrient Report</Button>
-          <Spacer/>
-          <Button style={{ marginVertical: 4 }} onPress={() => logout()}>Logout</Button>
-        </Layout>
+      <Layout style={styles.mainContainer}>
+        <Layout style={styles.toggleBarContainer}>
+          <Toggle checked={currentTheme=='light'?false:true}
+                  onChange={themeContext.toggleTheme}>
+          </Toggle>
+          <Icon style={styles.icon}
+                fill={currentTheme=='light'?'#ffae42':'#ffffff'}
+                name={currentTheme=='light'?'sun':'moon'}
+          />
+          </Layout>
+        <Button style={{ marginVertical: 4 }} onPress={() => navigateLogFood()}>Log Food</Button>
+        <Spacer/>
+        <Button style={{ marginVertical: 4 }} onPress={() => navigateViewLoggedFood()}>View Logged Food</Button>
+        <Spacer/>
+        <Button style={{ marginVertical: 4 }} onPress={() => navigateNutrientReport()}>View Nutrient Report</Button>
+        <Spacer/>
+      </Layout>
     </SafeAreaView>
   );
 };
