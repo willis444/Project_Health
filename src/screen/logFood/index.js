@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Platform, View, TouchableWithoutFeedback, Pressable } from 'react-native';
+import { SafeAreaView, Platform, View, TouchableWithoutFeedback, Pressable, ScrollView } from 'react-native';
 import styles from './styles';
 import { Divider, Layout, TopNavigation, Input, Text, Autocomplete, AutocompleteItem, Button, Icon, ButtonGroup, IndexPath, Select, SelectItem } from '@ui-kitten/components';
 import { Spacer, LoadingSpinner } from '../../../custom_components';
@@ -9,7 +9,6 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { useDispatch, useSelector } from 'react-redux';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {API} from '@env';
-import { ScrollView } from 'react-native-gesture-handler';
 import { addNewFoodRecord } from '../../../axios/food';
 
 export const LogFoodScreen = ({ navigation }) => {
@@ -22,7 +21,7 @@ const foodName = useSelector(state => state.food.foodName);
 
 const baseUrl = API; // get api from axios
 
-const language = 'ms'; // set teh language to en
+const language = useSelector(state => state.app.user_language); // get language from redux toolkit
 
 const getData = () => fetch(`${baseUrl}/food/findFood/${query}/${language}`); // retreive available food from the database based on the query
 const requestDataWithDebounce = AwesomeDebouncePromise(getData, 600); // call the getData function after 400ms the user stopped typing

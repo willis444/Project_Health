@@ -5,32 +5,48 @@ import { Layout, Input, Text, Toggle, Button } from '@ui-kitten/components';
 import { Spacer, LoadingSpinner } from '../../../custom_components';
 import { toastMessage } from '../../../custom_components';
 import { useDispatch, useSelector } from 'react-redux';
-import { destroyLoginSession } from '../../store/auth/authSlice';
+import { setLoginStatus } from '../../store/auth/authSlice';
+import { setUserLanguage, retrieveUserProfile, setisLoading } from '../../store/app/appSlice';
+import { updateLanguage } from '../../../axios/user';
 import { clearJWT } from '../../../AsyncStorage/store';
 
 export const SettingScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => { // use-effect is used to make sure all the action is only runned once
-    
-  }, []);
-
   const isLoading = useSelector(state => state.app.isLoading.payload);
+
+  const language = useSelector(state => state.app.user_language);
+
+  var count = 0;
 
   const navigateToDashboard = () => {
     navigation.navigate('Home');
   }
 
   const logout = () => {
-    dispatch(destroyLoginSession()); // update the redux state by deleting the login status and token
     clearJWT(); // clear the token stored in async storage
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Login' }],
-    });
+    dispatch(setLoginStatus(false));
     toastMessage('Logged out Successfully');
   }
+
+  // use effect hook to make sure the function only runs once when the data change
+  useEffect(async() => {
+    dispatch(setisLoading(true));
+    const data = { // define data body
+      user_language: language,
+    }
+    const result = await updateLanguage(data);
+    dispatch(retrieveUserProfile());
+  }, [language]);
+
+  const onCheckedLanguage = async() => {
+    if (language=="en") {
+      dispatch(setUserLanguage("ms"));
+    } else {
+      dispatch(setUserLanguage("en"));
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -40,6 +56,15 @@ export const SettingScreen = ({ navigation }) => {
         <Layout style={styles.card}>
           <Text style={styles.title}>Setting</Text>
           <Spacer />
+          <Spacer height={20}/>
+          <Text style={styles.content}>{language=='en'?"English":"Malay"}</Text>
+          <Spacer/>
+          <Toggle style={styles.toggle}
+                  status= {language=='en'?'warning':'warning'}
+                  checked={language=='en'?true:false} 
+                  onChange={onCheckedLanguage}>
+          </Toggle>
+          <Spacer/>
           <Button style={{ marginVertical: 4 }} onPress={() => logout()}>Logout</Button>
         </Layout>
       </Layout>

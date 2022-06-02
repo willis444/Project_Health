@@ -6,7 +6,6 @@ import { ThemeContext } from '../../theme/theme-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { LoadingSpinner, Spacer } from '../../../custom_components';
 import notifee, { TimestampTrigger, TriggerType, RepeatFrequency, AndroidImportance } from '@notifee/react-native';
-import { DrawerActions } from '@react-navigation/native';
 
 export const HomeScreen = ({ navigation }) => {
 

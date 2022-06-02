@@ -3,9 +3,11 @@ import { SafeAreaView } from 'react-native';
 import { Divider, Icon, Layout, Text, TopNavigation, TopNavigationAction, Button } from '@ui-kitten/components';
 import { Spacer } from '../../../custom_components';
 import { useDispatch } from 'react-redux';
-import { retrieveUserProfile, setisLoading } from '../../store/app/appSlice';
+import { retrieveUserProfile} from '../../store/app/appSlice';
 import { checkJWT } from '../../../AsyncStorage/store';
 import notifee, { TimestampTrigger, TriggerType, RepeatFrequency, AndroidImportance } from '@notifee/react-native';
+import { setLoginStatus } from '../../store/auth/authSlice';
+
 
 const BackIcon = (props) => (
   <Icon {...props} name='arrow-back' />
@@ -29,11 +31,8 @@ export const SplashScreen = ({ navigation }) => {
     const isLogin = await checkJWT(); // get login status from async storage
     if (isLogin === true) { // if the result is true
       //dispatch(setisLoading(true));
+      dispatch(setLoginStatus(true));
       dispatch(retrieveUserProfile());
-      navigation.reset({ // navigate user to homescreen and reset the route
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
       return true;
     } else if (isLogin === false) { // if the result is false
       navigation.reset({ // navigate user to homescreen and reset the route

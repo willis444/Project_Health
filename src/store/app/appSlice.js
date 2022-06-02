@@ -6,6 +6,7 @@ const initialState = {
   user_id: null,
   user_role: null,
   user_gender: null,
+  user_language: null,
   isPork: null,
   isBeef: null,
   isVegetarian: null,
@@ -36,6 +37,9 @@ export const appSlice = createSlice({
       setUserGender: (state, value) => {
         state.user_gender = value.payload;
       },
+      setUserLanguage: (state, value) => {
+        state.user_language = value.payload;
+      },
       setIsPork: (state, value) => {
         state.isPork = value.payload;
       },
@@ -54,6 +58,7 @@ export const appSlice = createSlice({
         state.user_id = payload.data._id;
         state.user_role = payload.data.user_role;
         state.user_gender = payload.data.user_gender;
+        state.user_language = payload.data.user_language;
         state.isPork = payload.data.user_eating_habits.isPork;
         state.isBeef = payload.data.user_eating_habits.isBeef;
         state.isVegetarian = payload.data.user_eating_habits.isVegetarian;
@@ -64,6 +69,6 @@ export const appSlice = createSlice({
   })
   
   // Action creators are generated for each case reducer function
-  export const { setisLoading, setUserGender ,setIsPork, setIsBeef, setIsVegetarian, setIsSeafood } = appSlice.actions
+  export const { setisLoading, setUserGender ,setIsPork, setIsBeef, setIsVegetarian, setIsSeafood, setUserLanguage } = appSlice.actions
   
   export default appSlice.reducer

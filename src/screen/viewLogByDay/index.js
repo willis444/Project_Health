@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Platform, View, TouchableWithoutFeedback, Pressable } from 'react-native';
+import { SafeAreaView, Platform, View, TouchableWithoutFeedback, Pressable, ScrollView } from 'react-native';
 import styles from './styles';
 import { Divider, Layout, TopNavigation, Input, Text, Button, Icon} from '@ui-kitten/components';
 import { Spacer, LoadingSpinner } from '../../../custom_components';
@@ -8,7 +8,6 @@ import { setisLoading } from '../../store/app/appSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {API} from '@env';
-import { ScrollView } from 'react-native-gesture-handler';
 import { getLogByDay } from '../../../axios/food';
 
 export const viewLogByDay = ({ navigation }) => {
@@ -19,7 +18,7 @@ const isLoading = useSelector(state => state.app.isLoading.payload); // loading 
 
 const baseUrl = API; // get api from axios
 
-const language = 'ms'; // set teh language to en
+const language = useSelector(state => state.app.user_language); // get language from redux toolkit
 
 // state for query and data array
 const [data, setData] = useState([]); // state for the fetched result from db

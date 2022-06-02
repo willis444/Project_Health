@@ -6,6 +6,7 @@ import { Spacer, LoadingSpinner } from '../../../custom_components';
 import { login } from '../../../axios/auth';
 import { toastMessage } from '../../../custom_components';
 import { setisLoading } from '../../store/app/appSlice'
+import { setLoginStatus } from '../../store/auth/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { getJWT } from '../../../AsyncStorage/store';
 
@@ -20,15 +21,10 @@ export const LoginScreen = ({ navigation }) => {
       return toastMessage("Please fill in all the required fields");
     }
     dispatch(setisLoading(true));
-    console.log(isLoading);
     var response = await login(valueID, valuePassword); // call the login function from axios
     if (!response) { // if the response is null
       const token = await getJWT();
-      //dispatch(setLoginSession(token)); // update redux state
-      navigation.reset({ // navigate to home screen and reset the stack to prevent user from going back to login screen
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
+      dispatch(setLoginStatus(true)); // update redux state
       toastMessage('Login successfully'); // display successful message to user
       dispatch(setisLoading(false));
     } else { // if there is any error message returned, display it

@@ -2,28 +2,20 @@ import { createSlice } from '@reduxjs/toolkit'
 import { checkJWT, getJWT } from '../../../AsyncStorage/store.js'
 
 const initialState = {
-  loginStatus: null,
-  jwtToken: null,
-  // loginStatus: checkJWT(),
-  // jwtToken: getJWT(),
+  loginStatus: false,
 }
 
 export const loginSlice = createSlice({
-    name: 'token',
+    name: 'auth',
     initialState,
     reducers: {
-      setLoginSession: (state, token) => {
-        state.loginStatus = true,
-        state.jwtToken = token
-      },
-      destroyLoginSession: (state) => {
-        state.loginStatus = false,
-        state.jwtToken = null
+      setLoginStatus: (state, value) => {
+        state.loginStatus = value.payload
       },
     },
   })
   
   // Action creators are generated for each case reducer function
-  export const { setLoginSession, destroyLoginSession } = loginSlice.actions
+  export const { setLoginStatus } = loginSlice.actions
   
   export default loginSlice.reducer

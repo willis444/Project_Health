@@ -16,7 +16,7 @@ const generateHeader = async() => {
 
 generateHeader();
 
-const getProfile = async () => { // login function
+const getProfile = async () => {
   await generateHeader();
   const url = `${baseUrl}/user/getProfile`; // define api url
   try {
@@ -38,7 +38,7 @@ const getProfile = async () => { // login function
   }
 };
 
-const updateProfile = async (data) => { // login function
+const updateProfile = async (data) => {
   await generateHeader();
   const url = `${baseUrl}/user/updateProfile`; // define api url
   try {
@@ -60,7 +60,30 @@ const updateProfile = async (data) => { // login function
   }
 };
 
+const updateLanguage = async (data) => {
+  await generateHeader();
+  const url = `${baseUrl}/user/updateLanguage`; // define api url
+  try {
+    await axios.post(url, // make a post request using the url defined above, then append the data into the request
+      qs.stringify(data), // stringify the content so it can be passed to the backend
+      {headers: headers} // define the header of the request
+    );
+    return "Update successful"; // return the response of the api call
+    } catch (error) { // error handling
+        try {
+          if (error.response.headers) { // if there is header from error message, means it is returned by the api
+              console.log(error.response.data);
+              return(error.response.data);
+            }
+        } catch (error) { // else display error from axios
+          console.log(error);
+          return (error.message);
+        }
+    }
+}
+
 export {
   getProfile,
-  updateProfile
+  updateProfile,
+  updateLanguage
 };
