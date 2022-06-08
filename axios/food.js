@@ -32,7 +32,7 @@ const findFood = async (keywords) => { // login function
               return(error.response.data);
             }
         } catch { // else display error from axios
-          return (error.message);
+          return ("Opps, seemslike the server is down, please try again later.");
         }
     }
   };

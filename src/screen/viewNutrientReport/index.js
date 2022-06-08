@@ -456,7 +456,7 @@ return (
         {month.map(renderOption)}
       </Select>
     <Spacer/>
-    <Text>Select Month</Text>
+    <Text>Select Week</Text>
     <Select
         selectedIndex={selectedWeekIndex}
         value = {selectedWeek}
@@ -476,7 +476,7 @@ return (
         <RenderMicroNutreint/>
         </Layout>
       <Spacer/>
-      <Text style={styles.subTitle}>Breakfast Time analysis</Text>
+      <Text style={styles.subTitle}>Meal Time analysis</Text>
       <VictoryChart
         domainPadding={20}
         theme={VictoryTheme.material}

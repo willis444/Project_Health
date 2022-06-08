@@ -195,7 +195,7 @@ function addServingSize (index){
     newArr[index].serving_size = value + 0.25; // update the selected array
     setSelected(newArr); // update selected array
   } else {
-    toastMessage("The minimum serving size is 99");
+    toastMessage("The maximum serving size is 99");
   }
 }
 
