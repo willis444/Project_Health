@@ -33,7 +33,7 @@ export const AppNavigator = () => {
     );
     
     const MainNavigator  = () => (
-      <Navigator  tabBar={props => <BottomTabBar {...props} />} screenOptions={{headerShown: false}} >
+      <Navigator  tabBar={props => <BottomTabBar {...props} />} screenOptions={{headerShown: false, unmountOnBlur:true}} >
         <Screen name='Home' component={HomeScreen}/>
         <Screen name='Profile' component={ProfileScreen}/>
         <Screen name='SettingScreen' component={SettingScreen}/>
